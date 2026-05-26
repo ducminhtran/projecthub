@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ProjectHub – Quản lý dự án</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="styles/main.css"/>
+</head>
+<body>
+</head>
+<body>
+
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen" style="
+  position:fixed;inset:0;
+  background:#f7f6f3;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:9999;
+  font-family:'Inter',-apple-system,sans-serif;
+  transition:opacity 0.4s ease;
+">
+  <div style="margin-bottom:20px">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="#5b6af9">
+      <path d="M12 2C7 2 3 6.5 3 10c0 1.5.5 3 1.5 4L3 18l3.5-1c1.5 1 3 1.5 5.5 1.5s4-0.5 5.5-1.5L21 18l-1.5-4c1-1 1.5-2.5 1.5-4C21 6.5 17 2 12 2z"/>
+      <circle cx="9" cy="10" r="1.2" fill="rgba(255,255,255,0.8)"/>
+      <circle cx="15" cy="10" r="1.2" fill="rgba(255,255,255,0.8)"/>
+      <path d="M10 13.5c.5.8 1 1 2 1s1.5-.2 2-1" stroke="rgba(255,255,255,0.8)" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M3 4l2 3M21 4l-2 3" stroke="#5b6af9" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div style="font-size:20px;font-weight:700;color:#37352f;margin-bottom:8px">ProjectHub</div>
+  <div id="loading-msg" style="font-size:13px;color:rgba(55,53,47,0.5);margin-bottom:24px">Đang kết nối Google Sheets...</div>
+  <div style="width:200px;height:3px;background:#eeece9;border-radius:99px;overflow:hidden">
+    <div id="loading-bar" style="height:100%;width:0%;background:#2383e2;border-radius:99px;transition:width 0.4s ease;animation:loadProgress 2s ease-in-out infinite"></div>
+  </div>
+
+  <style>
+    @keyframes loadProgress {
+      0%   { width:0%; }
+      50%  { width:70%; }
+      100% { width:90%; }
+    }
+  </style>
+</div>
+
+<!-- ══ SIDEBAR ══ -->
+<aside id="sidebar">
+  <div class="sb-header">
+    <div class="ws-name">
+      <div class="ws-av" style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#5b6af9,#818cf8);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(91,106,249,0.35)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C7 2 3 6.5 3 10c0 1.5.5 3 1.5 4L3 18l3.5-1c1.5 1 3 1.5 5.5 1.5s4-0.5 5.5-1.5L21 18l-1.5-4c1-1 1.5-2.5 1.5-4C21 6.5 17 2 12 2z"/>
+          <circle cx="9" cy="10" r="1.2" fill="rgba(0,0,0,0.3)"/>
+          <circle cx="15" cy="10" r="1.2" fill="rgba(0,0,0,0.3)"/>
+          <path d="M10 13.5c.5.8 1 1 2 1s1.5-.2 2-1" stroke="rgba(0,0,0,0.3)" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <path d="M3 4l2 3M21 4l-2 3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span style="flex:1">ProjectHub</span>
+      <span style="display:inline-flex;opacity:0.4"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 6l4 3 4-3"/></svg></span>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <nav id="main-nav">
+      <div class="nav-item active" data-view="dashboard"><span>🏠</span>Tổng quan</div>
+      <div class="nav-item" data-view="tasks"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2.5 2.5L11 5"/></svg></span>Task Manager</div>
+      <div class="nav-item" data-view="issues"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><circle cx="8" cy="9" r="4"/><path d="M8 5V3m-3 2l-2-2m10 2l-2-2M4 9H2m10 0h2M5.5 13l-2 2m7-2l2 2"/></svg></span>Issue Manager</div>
+      <div class="nav-item" data-view="board"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><rect x="4" y="2" width="8" height="2" rx="1"/><rect x="2" y="4" width="12" height="10" rx="2"/><path d="M5 8h6M5 11h4"/></svg></span>Display Board</div>
+      <div class="nav-item" data-view="calendar"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M5 2v2m6-2v2M2 7h12"/></svg></span>Calendar</div>
+      <div class="nav-item" data-view="gantt"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M2 12h2V7H2v5zm4 0h2V4H6v8zm4 0h2V9h-2v3z"/></svg></span>Gantt Chart</div>
+      <div class="nav-item" data-view="planner"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M11 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V5l-3-3z"/><path d="M11 2v3h3M5 9h6M5 12h4"/></svg></span>Daily Planner</div>
+      <div class="nav-item" data-view="report"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M2 12l4-5 3 3 5-7"/><path d="M11 3h3v3"/></svg></span>Report</div>
+    </nav>
+  </div>
+  <div class="sb-div"></div>
+  <div class="sb-sec">
+    <div id="sb-proj-toggle" onclick="toggleSbProjects()" style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:var(--radius-md);cursor:pointer;font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;user-select:none">
+      <span id="sb-proj-arrow" style="display:inline-flex;transition:transform .2s;transform:rotate(90deg)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M5 4l7 4-7 4V4z" fill="currentColor" stroke="none"/></svg></span>
+      Quản lý dự án
+      <span id="sb-proj-total" style="margin-left:auto;background:var(--bg3);border-radius:99px;padding:1px 6px;font-size:10px;color:var(--text3)"></span>
+    </div>
+    <div id="sb-proj-list" style="display:block;overflow:hidden">
+      <div id="sb-projects"></div>
+    </div>
+  </div>
+  <div class="sb-div"></div>
+  <div class="sb-sec">
+    <div class="nav-item" id="nav-resource" onclick="showView('resource')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><circle cx="6" cy="6" r="3"/><circle cx="10" cy="6" r="3"/><path d="M1 14c0-2.5 2-4 5-4s5 1.5 5 4"/><path d="M10 10c1.5 0 3 1 3 3"/></svg></span>Thành viên dự án</div>
+  </div>
+  <div class="sb-div"></div>
+  <div class="sb-sec">
+    <div class="nav-item" data-view="settings" onclick="showView('settings')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><circle cx="8" cy="8" r="2.5"/><path d="M8 2v1.5m0 9V14m4.95-9.95l-1.06 1.06M4.11 11.89l-1.06 1.06M14 8h-1.5m-9 0H2m9.95 4.95l-1.06-1.06M4.11 4.11L3.05 3.05"/></svg></span>Cài đặt &amp; Thiết lập</div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+  <header id="header">
+    <button id="hamburger" onclick="toggleSidebar()" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;color:var(--text2);flex-shrink:0;align-items:center;justify-content:center">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M3 5h14M3 10h14M3 15h14"/>
+      </svg>
+    </button>
+    <span class="breadcrumb" id="breadcrumb"><b>Tổng quan</b></span>
+    <div id="sync-status" style="font-size:11.5px;color:var(--text3);display:flex;align-items:center;gap:4px;margin-right:8px;min-width:160px"></div>
+  <div class="hdr-right">
+      <button class="btn btn-sm" onclick="manualSave()" title="Lưu dữ liệu lên Sheets" style="font-size:12px">↑ Lưu</button>
+      <button class="btn btn-sm" onclick="pollFromSheets(false)" title="Tải dữ liệu mới từ Sheets" style="font-size:12px">↓ Nhận</button>
+      <button class="btn" onclick="toggleFilter()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 6l4 4 4-4"/></svg> Lọc</button>
+      <button class="btn" onclick="exportCSV()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 3v9m-4-4l4 4 4-4"/></svg> CSV</button>
+      <button class="btn btn-primary" onclick="openTaskModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 3v10M3 8h10"/></svg> Thêm Task</button>
+    </div>
+  </header>
+  <div id="filter-bar">
+    <input class="fi" id="f-search" placeholder="🔍 Tìm kiếm..." oninput="applyFilters()" style="min-width:160px"/>
+    <select class="fi" id="f-proj" onchange="applyFilters()"><option value="">Tất cả dự án</option></select>
+    <select class="fi" id="f-priority" onchange="applyFilters()"><option value="">Tất cả ưu tiên</option></select>
+    <select class="fi" id="f-stage" onchange="applyFilters()"><option value="">Tất cả trạng thái</option></select>
+    <select class="fi" id="f-person" onchange="applyFilters()"><option value="">Tất cả thành viên</option></select>
+    <button class="btn btn-sm" onclick="clearFilters()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4l8 8M12 4l-8 8"/></svg> Xóa</button>
+  </div>
+  <div id="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-lbl">Tổng Task</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">Toàn hệ thống</div></div>
+        <div class="stat-card"><div class="stat-lbl">Đang thực hiện</div><div class="stat-val" id="s-inprog" style="color:#3b82f6">0</div><div class="stat-sub">In progress</div></div>
+        <div class="stat-card"><div class="stat-lbl">Hoàn thành</div><div class="stat-val" id="s-done" style="color:#22c55e">0</div><div class="stat-sub">Done</div></div>
+        <div class="stat-card"><div class="stat-lbl">Khẩn cấp</div><div class="stat-val" id="s-urgent" style="color:#ef4444">0</div><div class="stat-sub">Cần xử lý ngay</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:14px">
+        <div class="tbl-wrap" style="max-height:360px;overflow-y:auto">
+          <div style="padding:13px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)">Task ưu tiên cao</div>
+          <table><thead><tr><th>Task</th><th>Dự án</th><th>Phụ trách</th><th>Tiến độ</th></tr></thead>
+          <tbody id="dash-tb"></tbody></table>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="chart-box"><div class="chart-title">Theo trạng thái</div><div id="dash-stage"></div></div>
+          <div class="chart-box"><div class="chart-title">Tiến độ dự án</div><div id="dash-proj"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="view" id="view-tasks">
+      <div class="sec-hdr"><div class="sec-title">Task Manager</div><span id="task-cnt" style="font-size:12px;color:var(--text3)"></span></div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Tên Task</th><th>Dự án</th><th>Trạng thái</th>
+          <th>Ưu tiên</th><th>Phụ trách</th><th>Bắt đầu</th><th>Deadline</th><th>Tiến độ</th><th>Giờ</th>
+        </tr></thead><tbody id="task-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ISSUES VIEW -->
+    <div class="view" id="view-issues">
+      <div class="sec-hdr">
+        <div class="sec-title" id="issues-title">Issue Manager</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select class="fi" id="f-issue-proj" onchange="renderIssues()" style="font-size:12px"></select>
+          <button class="btn btn-primary" onclick="openIssueModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 3v10M3 8h10"/></svg> Thêm Issue</button>
+        </div>
+      </div>
+      <div class="tbl-wrap" style="overflow-x:auto">
+        <table id="issues-table" style="min-width:1300px">
+          <thead><tr>
+            <th style="width:52px">Giao Task</th>
+            <th style="width:48px">STT</th>
+            <th style="width:70px">Dự án</th>
+            <th style="width:100px">Phân hệ</th>
+            <th style="min-width:160px">Chức năng</th>
+            <th style="min-width:200px">Mô tả Issue</th>
+            <th style="width:100px">Ngày log</th>
+            <th style="width:110px">Loại</th>
+            <th style="width:120px">Người phụ trách</th>
+            <th style="width:120px">PIC xử lý Issue</th>
+            <th style="width:100px">Tình trạng</th>
+            <th style="width:110px">Ngày hoàn thành</th>
+            <th style="width:120px">Người kiểm tra</th>
+            <th style="width:110px">Ngày xác nhận</th>
+            <th style="width:130px">Tình trạng XN</th>
+            <th style="min-width:140px">Ghi chú</th>
+            <th style="width:80px"></th>
+          </tr></thead>
+          <tbody id="issues-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BOARD -->
+    <div class="view" id="view-board">
+      <div class="sec-hdr"><div class="sec-title">Display Board</div></div>
+      <div class="board-tab-bar">
+        <div class="board-tab active" id="btab-stage" onclick="switchBoardTab('stage')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M9 2H3a1 1 0 00-1 1v5l7 7 5-5-7-7z"/><circle cx="5" cy="6" r="1" fill="currentColor" stroke="none"/></svg> Theo trạng thái</div>
+        <div class="board-tab" id="btab-member" onclick="switchBoardTab('member')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><circle cx="8" cy="6" r="3"/><path d="M3 14c0-2.5 2-4 5-4s5 1.5 5 4"/></svg> Theo thành viên</div>
+      </div>
+      <div class="board-cols" id="board-root"></div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="view" id="view-calendar">
+      <div class="sec-hdr">
+        <div class="sec-title">Calendar</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn btn-sm" onclick="prevMonth()">‹</button>
+          <span id="cal-lbl" style="font-size:13px;font-weight:600;min-width:130px;text-align:center"></span>
+          <button class="btn btn-sm" onclick="nextMonth()">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-root"></div>
+    </div>
+
+    <!-- GANTT -->
+    <div class="view" id="view-gantt">
+      <div class="sec-hdr"><div class="sec-title">Gantt Chart</div></div>
+      <div class="gantt-wrap"><div class="gantt-inner">
+        <div class="gantt-lp">
+          <div class="gantt-hdr"><span style="flex:1">Task</span><span style="width:80px">Stage</span><span style="width:46px">%</span></div>
+          <div id="gantt-left"></div>
+        </div>
+        <div class="gantt-rp">
+          <div class="gantt-tl" id="gantt-tl"></div>
+          <div id="gantt-bars"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- PLANNER -->
+    <div class="view" id="view-planner">
+      <div class="sec-hdr"><div class="sec-title">Daily Planner</div><span id="plan-date" style="font-size:12px;color:var(--text3)"></span></div>
+      <div class="planner-grid">
+        <div class="pbox">
+          <div class="pbox-title">Schedule <span style="margin-left:auto;font-weight:400;font-size:12px;color:var(--text3)">Tổng: <b id="plan-h">0</b>h</span></div>
+          <div style="display:grid;grid-template-columns:auto 1fr 55px;gap:8px;font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px">
+            <span>Ưu tiên</span><span>Task</span><span style="text-align:right">Giờ</span>
+          </div>
+          <div id="plan-rows"></div>
+        </div>
+        <div class="pbox">
+          <div class="pbox-title">Bảng nhiệm vụ</div>
+          <div class="mini-grid" id="mini-board"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="view" id="view-report">
+      <div class="sec-hdr"><div class="sec-title">Report & Analytics</div></div>
+      <div class="stats-grid" id="r-stats" style="margin-bottom:16px"></div>
+      <div class="report-grid">
+        <div class="chart-box"><div class="chart-title">Tiến độ theo dự án</div><div id="r-proj"></div></div>
+        <div class="chart-box"><div class="chart-title">Phân bố ưu tiên</div><div id="r-prio"></div></div>
+        <div class="chart-box"><div class="chart-title">Phân bố trạng thái</div><div id="r-stage"></div></div>
+        <div class="chart-box"><div class="chart-title">Task theo bộ phận</div><div id="r-dept"></div></div>
+      </div>
+    </div>
+
+    <!-- RESOURCE VIEW -->
+    <div class="view" id="view-resource">
+      <div class="sec-hdr">
+        <div class="sec-title">Thành viên dự án</div>
+        <button class="btn btn-primary" onclick="openMemberModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 3v10M3 8h10"/></svg> Thêm thành viên</button>
+      </div>
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)" id="res-stats"></div>
+      <!-- Filter bar -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <input class="fi" id="res-search" placeholder="🔍 Tìm thành viên..." oninput="renderResource()" style="min-width:180px"/>
+        <select class="fi" id="res-pos-filter" onchange="renderResource()"><option value="">Tất cả vị trí</option></select>
+      </div>
+      <div id="members-grid" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden"></div>
+    </div>
+
+    <!-- PROJECTS OVERVIEW -->
+    <div class="view" id="view-projects">
+      <div class="sec-hdr">
+        <div class="sec-title">Quản lý dự án</div>
+        <button class="btn btn-primary" onclick="openNewProjModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 3v10M3 8h10"/></svg> Tạo dự án mới</button>
+      </div>
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px">
+        <div id="ptab-open" onclick="switchProjOverviewTab('open')" style="padding:8px 16px;font-size:13px;cursor:pointer;color:var(--accent);border-bottom:2px solid var(--accent);font-weight:500;margin-bottom:-1px">Đang mở</div>
+        <div id="ptab-closed" onclick="switchProjOverviewTab('closed')" style="padding:8px 16px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px">Đã đóng</div>
+      </div>
+      <div id="proj-overview-cards" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden"></div>
+    </div>
+
+    <!-- PROJECT DETAIL VIEW -->
+    <div class="view" id="view-proj-detail">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <button class="btn btn-sm" onclick="backToProjList()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M10 8H3m0 0l3-3M3 8l3 3"/></svg> Quản lý dự án</button>
+        <div id="vpd-breadcrumb" style="font-size:13px;color:var(--text2)"></div>
+      </div>
+      <div id="vpd-content"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="sec-hdr"><div class="sec-title">Cài đặt hệ thống</div></div>
+      <div class="settings-layout">
+        <div class="settings-nav">
+          <div class="settings-nav-item active" data-sec="stages">Trạng thái</div>
+          <div class="settings-nav-item" data-sec="priorities">Mức độ ưu tiên</div>
+          <div class="settings-nav-item" data-sec="positions">Vị trí</div>
+          <div class="settings-nav-item" data-sec="modules">Phân hệ</div>
+          <div class="settings-nav-item" data-sec="issueTypes">Loại Issue</div>
+          <div class="settings-nav-item" data-sec="issueStatuses">Tình trạng Issue</div>
+          <div class="settings-nav-item" data-sec="confirmStatuses">Tình trạng XN</div>
+        </div>
+        <div class="settings-content">
+
+          <!-- STAGES SECTION -->
+          <div class="settings-section active" id="sec-stages">
+            <div class="settings-title">Trạng thái Task</div>
+            <div class="settings-desc">Quản lý các trạng thái dùng trong hệ thống. Trạng thái được áp dụng cho tất cả task.</div>
+            <table class="cat-table"><thead><tr><th>Màu</th><th>Tên trạng thái</th><th>Mô tả</th><th style="width:80px">Hành động</th></tr></thead>
+            <tbody id="stages-tbody"></tbody></table>
+            <div class="add-row" id="stage-add-row">
+              <input id="new-stage-name" placeholder="Tên trạng thái mới..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('stages')" />
+              <input id="new-stage-color" type="color" value="#3b82f6" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-stage-desc" placeholder="Mô tả..." style="flex:1" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('stages')">+ Thêm</button>
+            </div>
+          </div>
+
+          <!-- PRIORITIES SECTION -->
+          <div class="settings-section" id="sec-priorities">
+            <div class="settings-title">Mức độ ưu tiên</div>
+            <div class="settings-desc">Quản lý các mức ưu tiên. Mức độ được áp dụng khi tạo và lọc task.</div>
+            <table class="cat-table"><thead><tr><th>Màu</th><th>Tên ưu tiên</th><th>Mô tả</th><th style="width:80px">Hành động</th></tr></thead>
+            <tbody id="priorities-tbody"></tbody></table>
+            <div class="add-row">
+              <input id="new-priority-name" placeholder="Tên mức ưu tiên mới..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('priorities')" />
+              <input id="new-priority-color" type="color" value="#f97316" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-priority-desc" placeholder="Mô tả..." style="flex:1" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('priorities')">+ Thêm</button>
+            </div>
+          </div>
+
+          <!-- POSITIONS SECTION -->
+          <div class="settings-section" id="sec-positions">
+            <div class="settings-title">Vị trí (Chức danh)</div>
+            <div class="settings-desc">Quản lý các vị trí/chức danh trong nhóm dự án. Được dùng khi thêm thành viên.</div>
+            <table class="cat-table"><thead><tr><th>Màu</th><th>Tên vị trí</th><th>Mô tả</th><th style="width:80px">Hành động</th></tr></thead>
+            <tbody id="positions-tbody"></tbody></table>
+            <div class="add-row">
+              <input id="new-position-name" placeholder="Tên vị trí mới (PM, Lead, Member...)..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('positions')" />
+              <input id="new-position-color" type="color" value="#2563eb" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-position-desc" placeholder="Mô tả vai trò..." style="flex:1" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('positions')">+ Thêm</button>
+            </div>
+          </div>
+
+          <!-- MODULES SECTION -->
+          <div class="settings-section" id="sec-modules">
+            <div class="settings-title">Phân hệ</div>
+            <div class="settings-desc">Quản lý danh mục phân hệ. Mỗi phân hệ có tên viết tắt (hiển thị trong bảng) và tên đầy đủ.</div>
+            <table class="cat-table"><thead><tr>
+              <th>Màu</th><th>Tên viết tắt</th><th>Tên đầy đủ</th><th style="width:80px">Hành động</th>
+            </tr></thead>
+            <tbody id="modules-tbody"></tbody></table>
+            <div class="add-row">
+              <input id="new-module-name" placeholder="Tên viết tắt (VD: KT, CRM...)" style="width:140px;text-transform:uppercase" onkeydown="if(event.key==='Enter')addCategory('modules')" oninput="this.value=this.value.toUpperCase()" />
+              <input id="new-module-color" type="color" value="#3b82f6" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-module-fullname" placeholder="Tên đầy đủ phân hệ..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('modules')" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('modules')">+ Thêm</button>
+            </div>
+          </div>
+
+          <!-- ISSUE TYPES SECTION -->
+          <div class="settings-section" id="sec-issueTypes">
+            <div class="settings-title">Loại Issue</div>
+            <div class="settings-desc">Quản lý các loại issue. Được dùng ở cột "Loại" trong Issue Manager.</div>
+            <table class="cat-table"><thead><tr>
+              <th>Màu</th><th>Tên loại</th><th>Mô tả</th><th style="width:80px">Hành động</th>
+            </tr></thead>
+            <tbody id="issueTypes-tbody"></tbody></table>
+            <div class="add-row">
+              <input id="new-issueType-name" placeholder="Tên loại issue..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('issueTypes')" />
+              <input id="new-issueType-color" type="color" value="#ef4444" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-issueType-desc" placeholder="Mô tả..." style="flex:1" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('issueTypes')">+ Thêm</button>
+            </div>
+          </div>
+
+          <!-- ISSUE STATUSES SECTION -->
+          <div class="settings-section" id="sec-issueStatuses">
+            <div class="settings-title">Tình trạng Issue</div>
+            <div class="settings-desc">Quản lý các tình trạng xử lý issue. Cột "Tình trạng" trong Issue Manager sẽ lấy từ danh mục này.</div>
+            <table class="cat-table"><thead><tr><th>Màu</th><th>Tên tình trạng</th><th>Mô tả</th><th style="width:80px">Hành động</th></tr></thead>
+            <tbody id="issueStatuses-tbody"></tbody></table>
+            <div class="add-row">
+              <input id="new-issueStatus-name" placeholder="Tên tình trạng mới..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('issueStatuses')" />
+              <input id="new-issueStatus-color" type="color" value="#3b82f6" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-issueStatus-desc" placeholder="Mô tả..." style="flex:1" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('issueStatuses')">+ Thêm</button>
+            </div>
+          </div>
+
+          <!-- CONFIRM STATUSES SECTION -->
+          <div class="settings-section" id="sec-confirmStatuses">
+            <div class="settings-title">Tình trạng xác nhận</div>
+            <div class="settings-desc">Quản lý các tình trạng xác nhận issue. Cột "Tình trạng XN" trong Issue Manager lấy từ đây.</div>
+            <table class="cat-table"><thead><tr><th>Màu</th><th>Tên tình trạng</th><th>Mô tả</th><th style="width:80px">Hành động</th></tr></thead>
+            <tbody id="confirmStatuses-tbody"></tbody></table>
+            <div class="add-row">
+              <input id="new-confirmStatus-name" placeholder="Tên tình trạng xác nhận..." style="flex:1" onkeydown="if(event.key==='Enter')addCategory('confirmStatuses')" />
+              <input id="new-confirmStatus-color" type="color" value="#16a34a" style="width:38px;height:32px;padding:2px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer" />
+              <input id="new-confirmStatus-desc" placeholder="Mô tả..." style="flex:1" />
+              <button class="btn btn-primary btn-sm" onclick="addCategory('confirmStatuses')">+ Thêm</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- DETAIL PANEL -->
+<div id="dp">
+  <div class="dp-hdr">
+    <div style="flex:1">
+      <div id="dp-title" style="font-size:16px;font-weight:600;margin-bottom:5px"></div>
+      <div id="dp-sub" style="font-size:12px;color:var(--text3)"></div>
+    </div>
+    <button class="modal-close" onclick="closeDP()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+  </div>
+  <div class="dp-body">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="dp-badges"></div>
+    <div class="dp-fl">
+      <div class="dp-fl-label">Tiến độ</div>
+      <div class="prog-wrap" style="margin-top:6px">
+        <div class="prog-track" style="height:10px;flex:1"><div id="dp-bar" style="height:100%;border-radius:99px;background:var(--accent)"></div></div>
+        <span class="prog-pct" id="dp-pct">0%</span>
+      </div>
+    </div>
+    <div class="frow" style="margin-bottom:14px">
+      <div class="dp-fl"><div class="dp-fl-label">Bắt đầu</div><div class="dp-fl-val" id="dp-start"></div></div>
+      <div class="dp-fl"><div class="dp-fl-label">Deadline</div><div class="dp-fl-val" id="dp-due"></div></div>
+    </div>
+    <div class="frow" style="margin-bottom:14px">
+      <div class="dp-fl"><div class="dp-fl-label">Phụ trách</div><div class="dp-fl-val" id="dp-person"></div></div>
+      <div class="dp-fl"><div class="dp-fl-label">Số giờ</div><div class="dp-fl-val" id="dp-hours"></div></div>
+    </div>
+    <div class="dp-fl"><div class="dp-fl-label">Mô tả</div><div class="dp-fl-val" id="dp-desc" style="color:var(--text2);line-height:1.6;margin-top:4px"></div></div>
+    <div style="display:flex;gap:8px;margin-top:20px">
+      <button class="btn btn-primary" style="flex:1" id="dp-edit-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M11 2l3 3-8 8H3v-3l8-8z"/></svg> Chỉnh sửa</button>
+      <button class="btn btn-danger" id="dp-del-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 5h10m-7 0V3h4v2M6 5v7m4-7v7M4 5l1 9h6l1-9"/></svg> Xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- TASK MODAL -->
+<div id="modal-ov">
+  <div id="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-title">Thêm Task mới</div>
+      <button class="modal-close" onclick="closeTaskModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg" style="margin-bottom:14px">
+        <label class="fl">Tên Task *</label>
+        <input class="fi-inp" id="fi-name" placeholder="Nhập tên task..."/>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Dự án</label><select class="fi-sel" id="fi-proj"></select></div>
+        
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Trạng thái</label><select class="fi-sel" id="fi-stage"></select></div>
+        <div class="fg"><label class="fl">Mức độ ưu tiên</label><select class="fi-sel" id="fi-priority"></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Người phụ trách</label>
+          <select class="fi-sel" id="fi-person"></select>
+        </div>
+        <div class="fg"><label class="fl">Số giờ ước tính</label><input class="fi-inp" type="number" id="fi-hours" min="1" value="8"/></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Ngày bắt đầu</label><input class="fi-inp" type="date" id="fi-start"/></div>
+        <div class="fg"><label class="fl">Deadline</label><input class="fi-inp" type="date" id="fi-due"/></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Tiến độ (%)</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" id="fi-prog" min="0" max="100" value="0" style="flex:1" oninput="document.getElementById('fi-prog-val').textContent=this.value+'%'"/>
+          <span id="fi-prog-val" style="font-size:13px;font-weight:500;min-width:36px">0%</span>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Mô tả</label><textarea class="fi-ta" id="fi-desc" placeholder="Mô tả chi tiết..."></textarea></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn" onclick="closeTaskModal()">Hủy</button>
+      <button class="btn btn-primary" onclick="saveTask()">Lưu Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div id="proj-modal-ov" style="position:fixed;inset:0;background:rgba(15,15,15,.35);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(2px)">
+  <div style="background:var(--bg);border-radius:var(--radius-lg);width:560px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2);border:1px solid var(--border)">
+    <div class="modal-hdr"><div class="modal-title">Tạo dự án mới</div><button class="modal-close" onclick="closeProjModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+    <div class="modal-body">
+      <div class="frow" style="grid-template-columns:140px 1fr 1fr">
+        <div class="fg"><label class="fl">Mã dự án *</label><input class="fi-inp" id="pfi-code" placeholder="PRJ-001" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="fg"><label class="fl">Tên viết tắt *</label><input class="fi-inp" id="pfi-short" placeholder="VD: FIN, OPS..." style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" maxlength="8"/></div>
+        <div class="fg"><label class="fl">Tình trạng</label>
+          <select class="fi-sel" id="pfi-status"><option value="open">Đang mở</option><option value="closed">Đã đóng</option></select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Logo URL (link ảnh logo dự án)</label><input class="fi-inp" id="pfi-logo" placeholder="https://..." /></div>
+      <div class="fg"><label class="fl">Tên dự án *</label><input class="fi-inp" id="pfi-name" placeholder="Nhập tên đầy đủ của dự án..." style="font-size:14px;font-weight:500"/></div>
+      <div class="fg"><label class="fl">Mô tả dự án</label><textarea class="fi-ta" id="pfi-desc" placeholder="Mô tả ngắn về dự án..."></textarea></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Ngày bắt đầu</label><input class="fi-inp" type="date" id="pfi-start"/></div>
+        <div class="fg"><label class="fl">Ngày kết thúc dự kiến</label><input class="fi-inp" type="date" id="pfi-end"/></div>
+        <div class="fg"><label class="fl">Màu chủ đề</label><input type="color" id="pfi-color" value="#2563eb" style="width:100%;height:36px;padding:3px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer"/></div>
+      </div>
+      <div class="fg"><label class="fl">Quản lý dự án</label><input class="fi-inp" id="pfi-pm" placeholder="Tên người quản lý..."/></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn" onclick="closeProjModal()">Hủy</button>
+      <button class="btn btn-primary" onclick="saveProject()">Tạo dự án</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div id="confirm-ov">
+  <div id="confirm-box">
+    <h3 id="confirm-title">Xác nhận</h3>
+    <p id="confirm-msg">Bạn có chắc chắn?</p>
+    <div class="frow">
+      <button class="btn" onclick="confirmResolve(false)">Hủy</button>
+      <button class="btn btn-danger" onclick="confirmResolve(true)" id="confirm-ok-btn">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MEMBER MODAL -->
+<div id="member-modal-ov" style="position:fixed;inset:0;background:rgba(15,15,15,.35);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(2px)">
+  <div style="background:var(--bg);border-radius:var(--radius-lg);width:520px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2);border:1px solid var(--border)">
+    <div class="modal-hdr">
+      <div class="modal-title" id="member-modal-title">Thêm thành viên</div>
+      <button class="modal-close" onclick="closeMemberModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="fg"><label class="fl">Họ và tên *</label><input class="fi-inp" id="mfi-name" placeholder="Nguyễn Văn A..."/></div>
+        <div class="fg"><label class="fl">Email *</label><input class="fi-inp" id="mfi-email" type="email" placeholder="example@company.com"/></div>
+      </div>
+      <div class="fg"><label class="fl">Vị trí / Chức danh</label><select class="fi-sel" id="mfi-position"></select></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Màu avatar</label><input type="color" id="mfi-color" value="#2563eb" style="width:100%;height:36px;padding:3px;border:1px solid var(--border2);border-radius:var(--radius-md);cursor:pointer"/></div>
+        <div class="fg"><label class="fl">Số điện thoại</label><input class="fi-inp" id="mfi-phone" placeholder="0901 234 567"/></div>
+      </div>
+      <div class="fg"><label class="fl">Ghi chú</label><textarea class="fi-ta" id="mfi-note" placeholder="Kỹ năng, thông tin thêm..."></textarea></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn" onclick="closeMemberModal()">Hủy</button>
+      <button class="btn btn-primary" onclick="saveMember()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ISSUE MODAL -->
+<div id="issue-modal-ov" style="position:fixed;inset:0;background:rgba(15,15,15,.35);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(2px)">
+  <div style="background:var(--bg);border-radius:var(--radius-lg);width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2);border:1px solid var(--border)">
+    <div class="modal-hdr">
+      <div class="modal-title" id="issue-modal-title">Thêm Issue mới</div>
+      <button class="modal-close" onclick="closeIssueModal()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Dự án *</label><select class="fi-sel" id="ifi-proj"></select></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Phân hệ</label><select class="fi-sel" id="ifi-module"></select></div>
+        <div class="fg"><label class="fl">Chức năng</label><input class="fi-inp" id="ifi-feature" placeholder="Tên chức năng..."/></div>
+      </div>
+      <div class="fg"><label class="fl">Mô tả Issue *</label><textarea class="fi-ta" id="ifi-desc" placeholder="Mô tả chi tiết issue..."></textarea></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Ngày log Issue</label><input class="fi-inp" type="date" id="ifi-log-date"/></div>
+        <div class="fg"><label class="fl">Loại Issue</label><select class="fi-sel" id="ifi-type"></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Người phụ trách</label><select class="fi-sel" id="ifi-owner"></select></div>
+        <div class="fg"><label class="fl">PIC xử lý Issue</label><select class="fi-sel" id="ifi-pic"></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Tình trạng</label><select class="fi-sel" id="ifi-status"></select></div>
+        <div class="fg"><label class="fl">Ngày hoàn thành</label><input class="fi-inp" type="date" id="ifi-done-date"/></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Người kiểm tra</label><select class="fi-sel" id="ifi-tester"></select></div>
+        <div class="fg"><label class="fl">Ngày xác nhận</label><input class="fi-inp" type="date" id="ifi-confirm-date"/></div>
+      </div>
+      <div class="fg"><label class="fl">Tình trạng xác nhận</label><select class="fi-sel" id="ifi-confirm-status"></select></div>
+      <div class="fg"><label class="fl">Ghi chú</label><textarea class="fi-ta" id="ifi-note" placeholder="Ghi chú thêm..." style="min-height:50px"></textarea></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn" onclick="closeIssueModal()">Hủy</button>
+      <button class="btn btn-primary" onclick="saveIssue()">Lưu Issue</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+/* ══════════════════════════════════════════
+   CONFIG — Chỉ sửa GAS_URL tại đây
+   ══════════════════════════════════════════ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec';
+</script>
+<script src="src/app.js"></script>
+</body>
+</html>
