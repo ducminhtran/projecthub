@@ -8,6 +8,7 @@ function renderSettings(){
   renderCategoryTable('issueTypes');
   renderCategoryTable('issueStatuses');
   renderCategoryTable('confirmStatuses');
+  renderPermissions();
   rebuildTaskModalDropdowns();
 }
 
