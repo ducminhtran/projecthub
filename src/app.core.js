@@ -727,10 +727,12 @@ window.addEventListener('resize', () => {
 //  INIT
 // ══════════════════════════════
 
-// Chạy các hàm không cần data trước
-rebuildFilterDropdowns();
-rebuildTaskModalDropdowns();
-rebuildPersonDropdowns();
+// Đợi tất cả scripts load xong mới chạy init
+window.addEventListener('DOMContentLoaded', async function() {
+  // Chạy các hàm không cần data trước
+  rebuildFilterDropdowns();
+  rebuildTaskModalDropdowns();
+  rebuildPersonDropdowns();
 
 // Luôn load từ Sheets trước khi hiện app
 (async function init() {
@@ -755,3 +757,4 @@ rebuildPersonDropdowns();
   renderSidebarProjects();
   renderDashboard();
 })();
+}); // end DOMContentLoaded
