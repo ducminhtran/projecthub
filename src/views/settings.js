@@ -46,7 +46,7 @@ function addCategory(key){
   if(!nameIn){ console.error('Input not found: new-'+singular+'-name'); return; }
   const name=(nameIn.value||'').trim();
   if(!name){ nameIn.focus(); return; }
-  const newItem = {id:key+Date.now(),name,color:colorIn?colorIn.value:'#888',desc:descIn?descIn.value:''};
+  const newItem = {id:newCatId(key.slice(0,2)),name,color:colorIn?colorIn.value:'#888',desc:descIn?descIn.value:''};
   if(key==='modules'){
     const fnIn = document.getElementById('new-module-fullname');
     newItem.fullName = fnIn ? fnIn.value.trim() : '';

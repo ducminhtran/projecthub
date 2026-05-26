@@ -332,7 +332,7 @@ function saveProject(){
     if(cur2 && cur2.id==='view-proj-detail') renderProjDetailContent(p,'vpd-content');
     toast('Đã cập nhật dự án!');
   } else {
-    data.id='proj'+projNextId++;data.blocks=[];
+    data.id=newProjId();data.blocks=[];
     projects.push(data);
     toast('Đã tạo dự án mới!');
   }

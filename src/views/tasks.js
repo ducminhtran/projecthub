@@ -126,7 +126,7 @@ function saveTask(){
   const data={name,project_id:document.getElementById('fi-proj').value,stage_id:document.getElementById('fi-stage').value,priority_id:document.getElementById('fi-priority').value,assignee_id:document.getElementById('fi-person').value,start:document.getElementById('fi-start').value,due:document.getElementById('fi-due').value,progress:+document.getElementById('fi-prog').value,hours:+document.getElementById('fi-hours').value||1,desc:document.getElementById('fi-desc').value};
   if(editingTaskId){
     const idx=tasks.findIndex(t=>t.id===editingTaskId);tasks[idx]={...tasks[idx],...data};toast('Đã cập nhật task!');
-  } else {data.id=nextTaskId++;tasks.push(data);toast('Đã thêm task!');}
+  } else {data.id=newTaskId();tasks.push(data);toast('Đã thêm task!');}
   applyFilters();closeTaskModal();renderSidebarProjects();
   scheduleAutoSave();
   const cur=document.querySelector('.view.active').id.replace('view-','');
@@ -149,7 +149,7 @@ function toggleIssueTask(issueId, checked, checkboxEl){
 
     // Create task
     const newTask = {
-      id: nextTaskId++,
+      id: newTaskId(),
       name: taskName,
       project_id: iss.project_id,
       stage: '',

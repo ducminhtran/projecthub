@@ -132,7 +132,7 @@ function saveMember(){
     members[idx] = {...members[idx], ...data};
     toast('Đã cập nhật thành viên!');
   } else {
-    data.id = 'm'+memberNextId++;
+    data.id = newMemberId();
     members.push(data);
     toast('Đã thêm thành viên!');
   }
