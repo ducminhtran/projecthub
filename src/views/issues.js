@@ -232,7 +232,7 @@ function saveIssue(){
     issues[idx]={...issues[idx],...data};
     toast('Đã cập nhật issue!');
   } else {
-    data.id='i'+issueNextId++;
+    data.id=newIssueId();
     issues.push(data);
     toast('Đã thêm issue!');
   }
