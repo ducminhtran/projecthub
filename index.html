@@ -618,7 +618,11 @@
    ══════════════════════════════════════════ */
 const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec';
 </script>
-<!-- Core: state, utils, sync, resolvers -->
+<!-- Store & Router -->
+<script src="src/store.js"></script>
+<script src="src/router.js"></script>
+
+<!-- Core: logic, utils, sync, resolvers -->
 <script src="src/app.core.js"></script>
 
 <!-- Views: tách riêng từng module -->
@@ -637,12 +641,15 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwa
 <!-- INIT: chạy sau khi tất cả scripts đã load -->
 <script>
 (async function() {
-  // Khởi tạo dropdowns
+  // 1. Bind global vars → store
+  if (window.__store__) window.__store__.bindGlobals();
+
+  // 2. Init dropdowns
   rebuildFilterDropdowns();
   rebuildTaskModalDropdowns();
   rebuildPersonDropdowns();
 
-  // Load từ Sheets và render
+  // 3. Load từ Sheets
   if (GAS_URL && !GAS_URL.includes('YOUR_DEPLOYMENT_ID')) {
     const loaded = await loadFromSheets();
     if (loaded) {
@@ -655,8 +662,11 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwa
     hideLoadingScreen('Chưa cấu hình Google Sheets');
   }
 
+  // 4. Render sidebar
   renderSidebarProjects();
-  showView('dashboard');
+
+  // 5. Init router (wrap showView, enable back/forward)
+  if (window.__router__) window.__router__.init();
 })();
 </script>
 </body>
