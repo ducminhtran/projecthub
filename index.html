@@ -618,8 +618,10 @@
    ══════════════════════════════════════════ */
 const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec';
 </script>
-<!--  core + view files -->
+<!-- Core: state, utils, sync, resolvers -->
 <script src="src/app.core.js"></script>
+
+<!-- Views: tách riêng từng module -->
 <script src="src/views/dashboard.js"></script>
 <script src="src/views/tasks.js"></script>
 <script src="src/views/issues.js"></script>
@@ -631,5 +633,31 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwa
 <script src="src/views/projects.js"></script>
 <script src="src/views/settings.js"></script>
 <script src="src/views/members.js"></script>
+
+<!-- INIT: chạy sau khi tất cả scripts đã load -->
+<script>
+(async function() {
+  // Khởi tạo dropdowns
+  rebuildFilterDropdowns();
+  rebuildTaskModalDropdowns();
+  rebuildPersonDropdowns();
+
+  // Load từ Sheets và render
+  if (GAS_URL && !GAS_URL.includes('YOUR_DEPLOYMENT_ID')) {
+    const loaded = await loadFromSheets();
+    if (loaded) {
+      startPolling(30000);
+    } else {
+      hideLoadingScreen('Lỗi kết nối — bắt đầu với dữ liệu trống');
+    }
+  } else {
+    showSyncStatus('offline', 'Chưa kết nối Google Sheets');
+    hideLoadingScreen('Chưa cấu hình Google Sheets');
+  }
+
+  renderSidebarProjects();
+  showView('dashboard');
+})();
+</script>
 </body>
 </html>
