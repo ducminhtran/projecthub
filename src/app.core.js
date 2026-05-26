@@ -722,39 +722,3 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', () => {
   if (window.innerWidth > 768) closeSidebar();
 });
-
-// ══════════════════════════════
-//  INIT
-// ══════════════════════════════
-
-// Đợi tất cả scripts load xong mới chạy init
-window.addEventListener('DOMContentLoaded', async function() {
-  // Chạy các hàm không cần data trước
-  rebuildFilterDropdowns();
-  rebuildTaskModalDropdowns();
-  rebuildPersonDropdowns();
-
-// Luôn load từ Sheets trước khi hiện app
-(async function init() {
-  if (GAS_URL && !GAS_URL.includes('YOUR_DEPLOYMENT_ID')) {
-    // Có GAS_URL → load từ Sheets, chờ xong mới render
-    const loaded = await loadFromSheets();
-    if (loaded) {
-      lastSyncHash = dataHash({tasks, projects, issues, members});
-      startPolling(30);
-    } else {
-      // Lỗi kết nối → hiện thông báo 2 giây rồi vào app
-      await new Promise(r => setTimeout(r, 2000));
-      hideLoadingScreen();
-    }
-  } else {
-    // Chưa cấu hình GAS_URL → vào app ngay
-    showSyncStatus('offline', 'Chưa kết nối Google Sheets');
-    hideLoadingScreen('Chưa cấu hình Google Sheets');
-  }
-
-  // Render sau khi có data
-  renderSidebarProjects();
-  renderDashboard();
-})();
-}); // end DOMContentLoaded
