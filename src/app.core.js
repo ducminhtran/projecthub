@@ -1,4 +1,19 @@
 
+
+// ── ID Generator: Prefix + Base36 timestamp (short, unique, readable) ──
+// Ví dụ: p_3xk2m, t_7mn4q, i_2pq8r, m_9rt1s, c_4ab3n
+function genId(prefix) {
+  const ts  = Date.now().toString(36).slice(-5);  // 5 ký tự base36 từ timestamp
+  const rnd = Math.random().toString(36).slice(2,4); // 2 ký tự random
+  return prefix + '_' + ts + rnd;
+}
+// Shortcuts
+function newProjId()    { return genId('p'); }
+function newTaskId()    { return genId('t'); }
+function newIssueId()   { return genId('i'); }
+function newMemberId()  { return genId('m'); }
+function newCatId(type) { return genId(type || 'c'); }
+
 // ══════════════════════════════════════════════════
 //  RELATION RESOLVERS (Phase 2 — ID-based)
 // ══════════════════════════════════════════════════
