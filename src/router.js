@@ -1,81 +1,96 @@
 /**
- * router.js — Hash-based Router với obfuscated paths
+ * router.js — Dynamic random hash router
  *
- * URL: ducminhtran.github.io/projecthub/#18a5566e805d  (= dashboard)
- * Hash 12 ký tự hex ngẫu nhiên — không ai đoán được route thật
+ * Mỗi lần navigate tạo hash ngẫu nhiên 16 ký tự.
+ * Mapping hash → view lưu trong sessionStorage.
+ * Back/Forward vẫn hoạt động nhờ history.state.
+ *
+ * URL: #a3f2bc91e8479d2c  (khác mỗi lần, không đoán được)
  */
 
 (function() {
 
-// ── Route maps ────────────────────────────────────
-// Hash 12 ký tự — SHA256(salt + routeName)[:12]
-// Salt: 23b96600a751cfd4 — KHÔNG thay đổi sau khi deploy
-const ROUTE_TO_HASH = {
-  'dashboard': '18a5566e805d',
-  'tasks':     '95f4acfcc364',
-  'issues':    '25cd7054b45e',
-  'board':     'a14533171fcd',
-  'calendar':  'df03e6a8e74c',
-  'gantt':     '775f784e1237',
-  'planner':   '6f37cf664309',
-  'report':    '0538ca578ce8',
-  'projects':  '78078996d5e5',
-  'resource':  'f716bb297e01',
-  'settings':  '9e93ba8a8804',
-};
-
-const HASH_TO_ROUTE = {};
-Object.keys(ROUTE_TO_HASH).forEach(function(route) {
-  HASH_TO_ROUTE[ROUTE_TO_HASH[route]] = route;
-});
-
-const TITLES = {
-  'dashboard': 'Tổng quan',       'tasks':    'Task Manager',
-  'issues':    'Issue Manager',   'board':    'Display Board',
-  'calendar':  'Calendar',        'gantt':    'Gantt Chart',
-  'planner':   'Daily Planner',   'report':   'Report',
-  'projects':  'Quản lý dự án',   'resource': 'Thành viên dự án',
-  'settings':  'Cài đặt & Thiết lập',
-};
+const VALID_VIEWS = [
+  'dashboard','tasks','issues','board','calendar',
+  'gantt','planner','report','projects','resource','settings'
+];
 
 // ── State ─────────────────────────────────────────
 var _currentView  = 'dashboard';
 var _origShowView = null;
 var _navigating   = false;
 
-// ── Helpers ───────────────────────────────────────
-function toHash(view) {
-  return ROUTE_TO_HASH[view] || ROUTE_TO_HASH['dashboard'];
+// Session map: hash → view (reset khi đóng tab)
+var _sessionMap = {};
+try {
+  _sessionMap = JSON.parse(sessionStorage.getItem('_rhm') || '{}');
+} catch(e) { _sessionMap = {}; }
+
+function saveMap() {
+  try { sessionStorage.setItem('_rhm', JSON.stringify(_sessionMap)); } catch(e) {}
 }
 
-function fromHash() {
-  var hash = window.location.hash.replace(/^#/, '');
-  return HASH_TO_ROUTE[hash] || 'dashboard';
+// ── Helpers ───────────────────────────────────────
+
+// Tạo hash ngẫu nhiên 16 ký tự hex
+function randomHash() {
+  var arr = new Uint8Array(8);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(function(b) {
+    return b.toString(16).padStart(2,'0');
+  }).join('');
+}
+
+// Tạo hash mới cho view, lưu mapping
+function newHashForView(view) {
+  var h = randomHash();
+  _sessionMap[h] = view;
+  saveMap();
+  return h;
+}
+
+// Decode hash → view
+function decodeHash(hash) {
+  return _sessionMap[hash] || null;
+}
+
+// Lấy hash hiện tại từ URL
+function currentHash() {
+  return window.location.hash.replace(/^#/, '');
 }
 
 // ── Init ──────────────────────────────────────────
 function initRouter() {
   _origShowView = window.showView;
 
-  // Override showView → update URL hash
+  // Override showView
   window.showView = function(name) {
+    if (!VALID_VIEWS.includes(name)) name = 'dashboard';
+
+    // Gọi showView gốc
     _origShowView(name);
 
+    // Tạo hash mới ngẫu nhiên mỗi lần navigate
     if (!_navigating) {
-      var newHash = '#' + toHash(name);
-      if (window.location.hash !== newHash) {
-        history.pushState({ view: name }, '', newHash);
-      }
+      var h = newHashForView(name);
+      history.pushState({ view: name, hash: h }, '', '#' + h);
     }
 
+    // Update store
     if (window.__store__) window.__store__.setState('currentView', name);
     _currentView = name;
     document.title = 'ProjectHub';
   };
 
-  // Back / Forward
+  // Back / Forward — dùng state.view (không dùng hash decode)
   window.addEventListener('popstate', function(e) {
-    var view = (e.state && e.state.view) ? e.state.view : fromHash();
+    var view = 'dashboard';
+    if (e.state && e.state.view) {
+      view = e.state.view;
+    } else {
+      // Fallback: decode từ sessionStorage
+      view = decodeHash(currentHash()) || 'dashboard';
+    }
     if (view !== _currentView) {
       _navigating = true;
       window.showView(view);
@@ -83,16 +98,22 @@ function initRouter() {
     }
   });
 
-  // Xử lý URL hiện tại khi load
-  var initView = fromHash();
+  // Load lần đầu — tạo hash ngẫu nhiên cho dashboard
+  var initView = 'dashboard';
+  var existingHash = currentHash();
+  if (existingHash && _sessionMap[existingHash]) {
+    initView = _sessionMap[existingHash];
+  }
+
   setTimeout(function() {
+    var h = newHashForView(initView);
     _navigating = true;
     window.showView(initView);
-    history.replaceState({ view: initView }, '', '#' + toHash(initView));
+    history.replaceState({ view: initView, hash: h }, '', '#' + h);
     _navigating = false;
   }, 150);
 
-  console.log('[Router] Ready — hash obfuscated ✅');
+  console.log('[Router] Dynamic hash ready ✅');
 }
 
 // ── Public API ────────────────────────────────────
@@ -100,8 +121,8 @@ window.__router__ = {
   init:           initRouter,
   navigate:       function(view) { window.showView(view); },
   getCurrentView: function() { return _currentView; },
-  getHash:        function(view) { return toHash(view || _currentView); },
-  decode:         function(hash) { return HASH_TO_ROUTE[hash] || null; },
+  decode:         function(hash) { return decodeHash(hash || currentHash()); },
+  getMap:         function() { return Object.assign({}, _sessionMap); },
 };
 
 window.__router__init = initRouter;
