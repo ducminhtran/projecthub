@@ -310,6 +310,8 @@
           <div class="settings-nav-item" data-sec="issueTypes">Loại Issue</div>
           <div class="settings-nav-item" data-sec="issueStatuses">Tình trạng Issue</div>
           <div class="settings-nav-item" data-sec="confirmStatuses">Tình trạng XN</div>
+          <div class="sb-div" style="margin:6px 0"></div>
+          <div class="settings-nav-item" data-sec="permissions" style="font-weight:500">🔐 Phân quyền</div>
         </div>
         <div class="settings-content">
 
@@ -413,6 +415,13 @@
               <input id="new-confirmStatus-desc" placeholder="Mô tả..." style="flex:1" />
               <button class="btn btn-primary btn-sm" onclick="addCategory('confirmStatuses')">+ Thêm</button>
             </div>
+          </div>
+
+          <!-- PERMISSIONS SECTION -->
+          <div class="settings-section" id="sec-permissions">
+            <div class="settings-title">Phân quyền</div>
+            <div class="settings-desc">Cấu hình quyền truy cập cho từng vị trí (chức danh). Thay đổi lưu tự động.</div>
+            <div id="perm-content"><div style="color:var(--text3);font-size:13px;padding:20px 0">Đang tải...</div></div>
           </div>
 
         </div>
@@ -637,6 +646,7 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwa
 <script src="src/views/projects.js"></script>
 <script src="src/views/settings.js"></script>
 <script src="src/views/members.js"></script>
+<script src="src/views/permissions.js"></script>
 <script src="src/views/permissions.js"></script>
 
 <!-- INIT: chạy sau khi tất cả scripts đã load -->
