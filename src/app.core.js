@@ -1,3 +1,69 @@
+// ══════════════════════════════════════════════════
+//  SESSION & AUTH
+// ══════════════════════════════════════════════════
+const SESSION_KEY  = 'ph_session';
+const LOGIN_URL    = 'login.html';
+const SESSION_HOURS = 8;
+
+// Lấy session hiện tại
+function getSession() {
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+  } catch(e) { return {}; }
+}
+
+// Kiểm tra session hợp lệ
+function isLoggedIn() {
+  const s = getSession();
+  return !!(s.token && s.expires_at > Date.now());
+}
+
+// Redirect về login nếu chưa đăng nhập
+function requireAuth() {
+  if (!isLoggedIn()) {
+    localStorage.removeItem(SESSION_KEY);
+    window.location.href = LOGIN_URL;
+    return false;
+  }
+  return true;
+}
+
+// Logout
+function logout() {
+  const s = getSession();
+  // Gọi Apps Script xóa session (fire & forget)
+  if (s.token && GAS_URL && !GAS_URL.includes('YOUR_')) {
+    fetch(GAS_URL + '?action=logout&token=' + encodeURIComponent(s.token))
+      .catch(() => {});
+  }
+  localStorage.removeItem(SESSION_KEY);
+  window.location.href = LOGIN_URL;
+}
+
+// Lấy username (email bỏ @domain)
+function getUsername() {
+  return getSession().username || getSession().email?.split('@')[0] || 'User';
+}
+
+// Lấy permissions của user hiện tại
+function getUserPermissions() {
+  return getSession().permissions || {};
+}
+
+// Kiểm tra quyền
+function can(feature, action) {
+  const s = getSession();
+  if (!s.token) return false;
+  const perms = s.permissions || {};
+  if (perms.all) return true;  // admin all
+  return !!(perms[feature]?.[action]);
+}
+
+// Lấy token để gửi kèm request
+function getToken() {
+  return getSession().token || '';
+}
+
 
 
 // ── ID Generator: Prefix + Base36 timestamp (short, unique, readable) ──
@@ -540,7 +606,8 @@ function scheduleAutoSave() {
         issueStatuses: catalog.issueStatuses,
         confirmStatuses: catalog.confirmStatuses,
       }));
-      const _res = await fetch(GAS_URL + '?action=saveAll&data=' + payload);
+      const token = getToken();
+      const _res = await fetch(GAS_URL + '?action=saveAll&token=' + encodeURIComponent(token) + '&data=' + payload);
       const _json = await _res.json();
       console.log('AutoSave result:', _json);
       if(_json && _json.ok){
@@ -574,7 +641,8 @@ async function manualSave() {
       issueStatuses: catalog.issueStatuses,
       confirmStatuses: catalog.confirmStatuses,
     }));
-    const _res = await fetch(GAS_URL + '?action=saveAll&data=' + payload);
+    const token = getToken();
+    const _res = await fetch(GAS_URL + '?action=saveAll&token=' + encodeURIComponent(token) + '&data=' + payload);
     const _json = await _res.json();
     console.log('ManualSave result:', _json);
     if(_json && _json.ok){
@@ -618,7 +686,8 @@ async function pollFromSheets(silent = true) {
   if (isSyncing || gsSaving) return; // đang save thì không poll
   isSyncing = true;
   try {
-    const res = await fetch(GAS_URL + '?all=true&t=' + Date.now(), {
+    const token = getToken();
+    const res = await fetch(GAS_URL + '?all=true&t=' + Date.now() + '&token=' + encodeURIComponent(token), {
       redirect: 'follow',
       mode: 'cors',
     });
