@@ -150,7 +150,7 @@ body::before{
 // ══════════════════════════════════════════════
 //  CONFIG — điền GAS_URL của bạn vào đây
 // ══════════════════════════════════════════════
-const GAS_URL     = 'YOUR_GAS_URL';
+const GAS_URL     = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec';
 const SESSION_KEY = 'ph_session';
 const APP_URL     = './index.html';
 
@@ -176,7 +176,7 @@ function resetView() {
 
 // ── Login ─────────────────────────────────────
 function login() {
-  if (!GAS_URL || GAS_URL.includes('https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec')) {
+  if (!GAS_URL || GAS_URL.includes('GAS_URL')) {
     showStatus('error', 'Chưa cấu hình GAS_URL trong login.html');
     return;
   }
