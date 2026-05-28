@@ -7,81 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#fff;--bg2:#f7f6f3;--border:rgba(55,53,47,.09);--border2:rgba(55,53,47,.16);
-  --text:#37352f;--text2:rgba(55,53,47,.65);--text3:rgba(55,53,47,.4);
-  --accent:#2383e2;--green:#0f7b6c;--red:#e03e3e;
-  --font:'DM Sans',-apple-system,sans-serif;
-}
-html{-webkit-font-smoothing:antialiased}
-body{
-  font-family:var(--font);background:var(--bg2);color:var(--text);
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
-}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;
-  background:radial-gradient(circle at 20% 20%,rgba(35,131,226,.06) 0%,transparent 50%),
-             radial-gradient(circle at 80% 80%,rgba(15,123,108,.04) 0%,transparent 50%);
-}
-.card{
-  background:var(--bg);border:1px solid var(--border2);border-radius:12px;
-  padding:48px 44px;width:100%;max-width:400px;position:relative;
-  box-shadow:0 1px 3px rgba(0,0,0,.05),0 8px 32px rgba(0,0,0,.06);
-  animation:fadeUp .3s ease;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:#f7f6f3;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border:1px solid rgba(55,53,47,.16);border-radius:12px;padding:48px 44px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.06)}
 .logo{display:flex;align-items:center;gap:11px;margin-bottom:32px}
-.logo-icon{
-  width:36px;height:36px;border-radius:9px;flex-shrink:0;
-  background:linear-gradient(135deg,#2383e2,#5b9cf6);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(35,131,226,.3);
-}
-.logo-text{font-size:17px;font-weight:700;letter-spacing:-.02em}
-.heading{font-size:22px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
-.subheading{font-size:14px;color:var(--text2);margin-bottom:32px;line-height:1.5}
-.btn-login{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:12px 16px;border:1px solid var(--border2);border-radius:8px;
-  background:var(--bg);color:var(--text);font-size:14px;font-weight:500;
-  font-family:var(--font);cursor:pointer;
-  transition:background .12s,box-shadow .12s;letter-spacing:-.01em;
-}
-.btn-login:hover{background:var(--bg2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.btn-login:active{transform:scale(.99)}
-.btn-login:disabled{opacity:.6;cursor:not-allowed}
-.google-logo{width:18px;height:18px;flex-shrink:0}
-.status{
-  display:none;padding:10px 14px;border-radius:7px;
-  font-size:13px;margin-top:16px;line-height:1.5;
-  align-items:center;gap:8px;
-}
-.status.show{display:flex}
-.status.loading{background:var(--bg2);color:var(--text2)}
-.status.error{background:rgba(224,62,62,.08);color:var(--red)}
-.status.success{background:rgba(15,123,108,.08);color:var(--green)}
-.spinner{
-  width:16px;height:16px;border:2px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;
-  animation:spin .7s linear infinite;flex-shrink:0;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.footer{
-  margin-top:28px;font-size:12px;color:var(--text3);
-  text-align:center;border-top:1px solid var(--border);padding-top:20px;line-height:1.6;
-}
-/* Unauthorized */
-.unauth{display:none;text-align:center;padding:8px 0}
-.unauth.show{display:block}
-.unauth-icon{font-size:36px;margin-bottom:12px}
-.unauth-title{font-size:16px;font-weight:600;margin-bottom:6px}
-.unauth-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
-.btn-retry{
-  padding:7px 16px;border:1px solid var(--border2);border-radius:7px;
-  background:var(--bg);color:var(--text2);font-size:13px;
-  cursor:pointer;font-family:var(--font);
-}
-.btn-retry:hover{background:var(--bg2)}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#2383e2,#5b9cf6);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(35,131,226,.3)}
+.logo-text{font-size:17px;font-weight:700;letter-spacing:-.02em;color:#37352f}
+.heading{font-size:22px;font-weight:700;color:#37352f;margin-bottom:8px}
+.sub{font-size:14px;color:rgba(55,53,47,.65);margin-bottom:28px;line-height:1.5}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border:1px solid rgba(55,53,47,.16);border-radius:8px;background:#fff;color:#37352f;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .12s}
+.btn:hover{background:#f7f6f3}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.msg{margin-top:14px;padding:10px 14px;border-radius:7px;font-size:13px;display:none}
+.msg.show{display:block}
+.msg.info{background:rgba(35,131,226,.08);color:#2383e2}
+.msg.error{background:rgba(224,62,62,.08);color:#e03e3e}
+.msg.ok{background:rgba(15,123,108,.08);color:#0f7b6c}
+.footer{margin-top:24px;padding-top:18px;border-top:1px solid rgba(55,53,47,.09);font-size:12px;color:rgba(55,53,47,.4);text-align:center}
 </style>
 </head>
 <body>
@@ -90,21 +31,17 @@ body::before{
     <div class="logo-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
         <path d="M12 2C7 2 3 6.5 3 10c0 1.5.5 3 1.5 4L3 18l3.5-1c1.5 1 3 1.5 5.5 1.5s4-.5 5.5-1.5L21 18l-1.5-4c1-1 1.5-2.5 1.5-4C21 6.5 17 2 12 2z"/>
-        <circle cx="9" cy="10" r="1.2" fill="rgba(35,131,226,.6)"/>
-        <circle cx="15" cy="10" r="1.2" fill="rgba(35,131,226,.6)"/>
-        <path d="M10 13.5c.5.8 1 1 2 1s1.5-.2 2-1" stroke="rgba(35,131,226,.6)" stroke-width="1" fill="none" stroke-linecap="round"/>
       </svg>
     </div>
     <span class="logo-text">ProjectHub</span>
   </div>
 
-  <!-- Login view -->
-  <div id="view-login">
+  <div id="view-main">
     <div class="heading">Đăng nhập</div>
-    <div class="subheading">Sử dụng tài khoản Google được cấp quyền để truy cập hệ thống.</div>
+    <div class="sub">Sử dụng tài khoản Google được cấp quyền để truy cập.</div>
 
-    <button class="btn-login" id="btn-login" onclick="login()">
-      <svg class="google-logo" viewBox="0 0 24 24">
+    <button class="btn" id="btn" onclick="doLogin()">
+      <svg width="18" height="18" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -113,128 +50,107 @@ body::before{
       Đăng nhập với Google
     </button>
 
-    <div class="status loading" id="st-loading">
-      <div class="spinner"></div>
-      <span>Đang xác thực tài khoản...</span>
-    </div>
-    <div class="status error" id="st-error">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/>
-      </svg>
-      <span id="st-error-msg"></span>
-    </div>
-    <div class="status success" id="st-success">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 6"/>
-      </svg>
-      <span>Đăng nhập thành công! Đang chuyển hướng...</span>
-    </div>
+    <div class="msg info show" id="msg-info" style="display:none"></div>
+    <div class="msg error" id="msg-error" style="display:none"></div>
+    <div class="msg ok" id="msg-ok" style="display:none"></div>
   </div>
 
-  <!-- Unauthorized view -->
-  <div class="unauth" id="view-unauth">
-    <div class="unauth-icon">🔒</div>
-    <div class="unauth-title">Không có quyền truy cập</div>
-    <div class="unauth-desc" id="unauth-desc">
-      Tài khoản của bạn chưa được cấp quyền.<br>Liên hệ quản trị viên để được cấp quyền.
-    </div>
-    <button class="btn-retry" onclick="resetView()">Thử tài khoản khác</button>
+  <div id="view-denied" style="display:none;text-align:center;padding:8px 0">
+    <div style="font-size:32px;margin-bottom:12px">🔒</div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:8px;color:#37352f">Không có quyền truy cập</div>
+    <div style="font-size:13px;color:rgba(55,53,47,.65);margin-bottom:16px" id="denied-msg">Email chưa được cấp quyền.</div>
+    <button class="btn" style="width:auto;padding:6px 16px" onclick="resetView()">Thử lại</button>
   </div>
 
-  <div class="footer">
-    Chỉ tài khoản được quản trị viên cấp quyền mới có thể đăng nhập.
-  </div>
+  <div class="footer">Chỉ tài khoản được cấp quyền mới có thể đăng nhập.</div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONFIG — điền GAS_URL của bạn vào đây
-// ══════════════════════════════════════════════
-const GAS_URL     = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec';
+// ── CONFIG ────────────────────────────────────
+const GAS_URL     = 'YOUR_GAS_URL'; // ← điền GAS_URL của bạn
 const SESSION_KEY = 'ph_session';
 const APP_URL     = './index.html';
 
-// ── UI helpers ────────────────────────────────
-function showStatus(type, msg) {
-  ['loading','error','success'].forEach(t =>
-    document.getElementById('st-'+t).classList.remove('show')
-  );
-  if (msg) document.getElementById('st-error-msg').textContent = msg;
-  document.getElementById('st-'+type).classList.add('show');
-}
-function hideStatus() {
-  ['loading','error','success'].forEach(t =>
-    document.getElementById('st-'+t).classList.remove('show')
-  );
-}
-function resetView() {
-  document.getElementById('view-login').style.display = 'block';
-  document.getElementById('view-unauth').classList.remove('show');
-  document.getElementById('btn-login').disabled = false;
-  hideStatus();
+// ── Helpers ───────────────────────────────────
+function showMsg(type, text) {
+  ['info','error','ok'].forEach(t => {
+    document.getElementById('msg-'+t).style.display = 'none';
+  });
+  if (type) {
+    var el = document.getElementById('msg-'+type);
+    el.textContent = text || '';
+    el.style.display = 'block';
+  }
 }
 
-// ── Login ─────────────────────────────────────
-function login() {
-  if (!GAS_URL || GAS_URL.includes('YOUR_GAS_URL')) {
-    showStatus('error', 'Chưa cấu hình GAS_URL trong login.html');
+function resetView() {
+  document.getElementById('view-main').style.display  = 'block';
+  document.getElementById('view-denied').style.display = 'none';
+  document.getElementById('btn').disabled = false;
+  showMsg(null);
+}
+
+// ── Login: redirect TOÀN TRANG sang GAS ───────
+var _clicking = false;
+function doLogin() {
+  if (_clicking) return;
+  _clicking = true;
+
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL') {
+    showMsg('error', 'Chưa điền GAS_URL trong login.html');
+    _clicking = false;
     return;
   }
-  document.getElementById('btn-login').disabled = true;
-  showStatus('loading');
 
-  // Tính URL redirect về app sau khi login xong
-  const appUrl = window.location.origin +
-    window.location.pathname.replace('login.html', 'index.html');
+  document.getElementById('btn').disabled = true;
+  showMsg('info', 'Đang chuyển hướng đến Google...');
 
-  // Redirect TOÀN TRANG sang Apps Script
-  // Apps Script sẽ yêu cầu Google đăng nhập nếu chưa login
-  const loginUrl = GAS_URL + '?action=login&redirect=' + encodeURIComponent(appUrl);
+  var appUrl   = window.location.href.replace('login.html', 'index.html');
+  var loginUrl = GAS_URL + '?action=login&redirect=' + encodeURIComponent(appUrl);
 
-  // Mở trực tiếp — không dùng popup/iframe
-  window.location.assign(loginUrl);
+  // QUAN TRỌNG: redirect toàn trang, không dùng popup/iframe
+  setTimeout(function() {
+    window.location.replace(loginUrl);
+  }, 200);
 }
 
-// ── Xử lý kết quả sau khi redirect về ────────
-function handleCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const error  = params.get('error');
-  const email  = params.get('email');
+// ── Xử lý kết quả callback ────────────────────
+function checkCallback() {
+  var search = window.location.search;
+  var params = new URLSearchParams(search);
+  var error  = params.get('error');
+  var email  = params.get('email');
+
+  if (!error) return;
+
+  // Xóa params khỏi URL
+  history.replaceState({}, '', window.location.pathname);
 
   if (error === 'unauthorized') {
-    document.getElementById('view-login').style.display = 'none';
-    document.getElementById('view-unauth').classList.add('show');
-    if (email) {
-      document.getElementById('unauth-desc').innerHTML =
-        `Email <b>${decodeURIComponent(email)}</b> chưa được cấp quyền.<br>Liên hệ quản trị viên.`;
-    }
-    // Xóa params khỏi URL
-    history.replaceState({}, '', window.location.pathname);
-    return;
-  }
-
-  if (error) {
-    showStatus('error', 'Lỗi đăng nhập: ' + decodeURIComponent(error));
-    history.replaceState({}, '', window.location.pathname);
-    return;
+    document.getElementById('view-main').style.display  = 'none';
+    document.getElementById('view-denied').style.display = 'block';
+    document.getElementById('denied-msg').textContent =
+      'Email ' + (email ? decodeURIComponent(email) : '') + ' chưa được cấp quyền.';
+  } else {
+    showMsg('error', 'Lỗi: ' + decodeURIComponent(error));
   }
 }
 
 // ── Init ─────────────────────────────────────
-(function init() {
-  // Kiểm tra session còn hợp lệ không
+(function() {
+  // Session còn hạn → vào app luôn
   try {
-    const s = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+    var s = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
     if (s.token && s.expires_at > Date.now()) {
-      showStatus('success');
-      setTimeout(() => window.location.href = APP_URL, 500);
+      showMsg('ok', 'Đã đăng nhập. Đang chuyển hướng...');
+      setTimeout(function() { window.location.replace(APP_URL); }, 400);
       return;
     }
   } catch(e) {}
   localStorage.removeItem(SESSION_KEY);
 
-  // Xử lý callback nếu có error params
-  handleCallback();
+  // Kiểm tra callback error
+  checkCallback();
 })();
 </script>
 </body>
