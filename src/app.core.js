@@ -686,7 +686,7 @@ async function pollFromSheets(silent = true) {
   if (isSyncing || gsSaving) return; // đang save thì không poll
   isSyncing = true;
   try {
-    const token = getToken();
+    const token = getToken() || 'no-auth';
     const res = await fetch(GAS_URL + '?all=true&t=' + Date.now() + '&token=' + encodeURIComponent(token), {
       redirect: 'follow',
       mode: 'cors',
