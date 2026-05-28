@@ -150,7 +150,7 @@ body::before{
 // ══════════════════════════════════════════════
 //  CONFIG — điền GAS_URL của bạn vào đây
 // ══════════════════════════════════════════════
-const GAS_URL     = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec';
+const GAS_URL     = 'YOUR_GAS_URL';
 const SESSION_KEY = 'ph_session';
 const APP_URL     = './index.html';
 
@@ -176,19 +176,23 @@ function resetView() {
 
 // ── Login ─────────────────────────────────────
 function login() {
-  if (!GAS_URL || GAS_URL.includes('GAS_URL')) {
+  if (!GAS_URL || GAS_URL.includes('YOUR_GAS_URL')) {
     showStatus('error', 'Chưa cấu hình GAS_URL trong login.html');
     return;
   }
   document.getElementById('btn-login').disabled = true;
   showStatus('loading');
 
-  // Redirect sang Apps Script để Google xác thực
-  const redirectBack = encodeURIComponent(window.location.href);
-  const loginUrl = GAS_URL + '?action=login&redirect=' +
-    encodeURIComponent(window.location.origin + window.location.pathname.replace('login.html','index.html'));
+  // Tính URL redirect về app sau khi login xong
+  const appUrl = window.location.origin +
+    window.location.pathname.replace('login.html', 'index.html');
 
-  window.location.href = loginUrl;
+  // Redirect TOÀN TRANG sang Apps Script
+  // Apps Script sẽ yêu cầu Google đăng nhập nếu chưa login
+  const loginUrl = GAS_URL + '?action=login&redirect=' + encodeURIComponent(appUrl);
+
+  // Mở trực tiếp — không dùng popup/iframe
+  window.location.assign(loginUrl);
 }
 
 // ── Xử lý kết quả sau khi redirect về ────────
