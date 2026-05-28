@@ -4,303 +4,106 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Đăng nhập — ProjectHub</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:      #ffffff;
-  --bg2:     #f7f6f3;
-  --bg3:     #eeece9;
-  --border:  rgba(55,53,47,0.09);
-  --border2: rgba(55,53,47,0.16);
-  --text:    #37352f;
-  --text2:   rgba(55,53,47,0.65);
-  --text3:   rgba(55,53,47,0.4);
-  --accent:  #2383e2;
-  --accent2: #1a73d1;
-  --green:   #0f7b6c;
-  --red:     #e03e3e;
-  --font:    'DM Sans', -apple-system, sans-serif;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f7f6f3;--border:rgba(55,53,47,.09);--border2:rgba(55,53,47,.16);
+  --text:#37352f;--text2:rgba(55,53,47,.65);--text3:rgba(55,53,47,.4);
+  --accent:#2383e2;--green:#0f7b6c;--red:#e03e3e;
+  --font:'DM Sans',-apple-system,sans-serif;
 }
-
-html { -webkit-font-smoothing: antialiased; }
-
-body {
-  font-family: var(--font);
-  background: var(--bg2);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+html{-webkit-font-smoothing:antialiased}
+body{
+  font-family:var(--font);background:var(--bg2);color:var(--text);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
 }
-
-/* Background subtle pattern */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(35,131,226,0.06) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(15,123,108,0.04) 0%, transparent 50%);
-  pointer-events: none;
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 20% 20%,rgba(35,131,226,.06) 0%,transparent 50%),
+             radial-gradient(circle at 80% 80%,rgba(15,123,108,.04) 0%,transparent 50%);
 }
-
-/* Card */
-.card {
-  background: var(--bg);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 48px 44px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow:
-    0 1px 3px rgba(0,0,0,0.05),
-    0 8px 32px rgba(0,0,0,0.06),
-    0 24px 64px rgba(0,0,0,0.04);
-  animation: fadeUp 0.3s ease;
-  position: relative;
+.card{
+  background:var(--bg);border:1px solid var(--border2);border-radius:12px;
+  padding:48px 44px;width:100%;max-width:400px;position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.05),0 8px 32px rgba(0,0,0,.06);
+  animation:fadeUp .3s ease;
 }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: none; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.logo{display:flex;align-items:center;gap:11px;margin-bottom:32px}
+.logo-icon{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,#2383e2,#5b9cf6);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(35,131,226,.3);
 }
-
-/* Logo */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin-bottom: 32px;
+.logo-text{font-size:17px;font-weight:700;letter-spacing:-.02em}
+.heading{font-size:22px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+.subheading{font-size:14px;color:var(--text2);margin-bottom:32px;line-height:1.5}
+.btn-login{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 16px;border:1px solid var(--border2);border-radius:8px;
+  background:var(--bg);color:var(--text);font-size:14px;font-weight:500;
+  font-family:var(--font);cursor:pointer;
+  transition:background .12s,box-shadow .12s;letter-spacing:-.01em;
 }
-
-.logo-icon {
-  width: 36px; height: 36px;
-  background: linear-gradient(135deg, #2383e2, #5b9cf6);
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(35,131,226,0.3);
-  flex-shrink: 0;
+.btn-login:hover{background:var(--bg2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.btn-login:active{transform:scale(.99)}
+.btn-login:disabled{opacity:.6;cursor:not-allowed}
+.google-logo{width:18px;height:18px;flex-shrink:0}
+.status{
+  display:none;padding:10px 14px;border-radius:7px;
+  font-size:13px;margin-top:16px;line-height:1.5;
+  align-items:center;gap:8px;
 }
-
-.logo-text {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
+.status.show{display:flex}
+.status.loading{background:var(--bg2);color:var(--text2)}
+.status.error{background:rgba(224,62,62,.08);color:var(--red)}
+.status.success{background:rgba(15,123,108,.08);color:var(--green)}
+.spinner{
+  width:16px;height:16px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;flex-shrink:0;
 }
-
-/* Heading */
-.heading {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.03em;
-  margin-bottom: 6px;
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{
+  margin-top:28px;font-size:12px;color:var(--text3);
+  text-align:center;border-top:1px solid var(--border);padding-top:20px;line-height:1.6;
 }
-
-.subheading {
-  font-size: 14px;
-  color: var(--text2);
-  margin-bottom: 32px;
-  line-height: 1.5;
+/* Unauthorized */
+.unauth{display:none;text-align:center;padding:8px 0}
+.unauth.show{display:block}
+.unauth-icon{font-size:36px;margin-bottom:12px}
+.unauth-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.unauth-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.btn-retry{
+  padding:7px 16px;border:1px solid var(--border2);border-radius:7px;
+  background:var(--bg);color:var(--text2);font-size:13px;
+  cursor:pointer;font-family:var(--font);
 }
-
-/* Divider */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-  color: var(--text3);
-  font-size: 12px;
-}
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* Google Sign-In button custom */
-.btn-google {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 11px 16px;
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 500;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
-  letter-spacing: -0.01em;
-}
-.btn-google:hover {
-  background: var(--bg2);
-  border-color: rgba(55,53,47,0.25);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-.btn-google:active { transform: scale(0.99); }
-
-.google-logo {
-  width: 18px; height: 18px; flex-shrink: 0;
-}
-
-/* Status messages */
-.status {
-  display: none;
-  padding: 10px 14px;
-  border-radius: 7px;
-  font-size: 13px;
-  margin-top: 16px;
-  line-height: 1.5;
-}
-.status.info    { display: flex; align-items: center; gap: 8px; background: rgba(35,131,226,0.08); color: var(--accent); }
-.status.error   { display: flex; align-items: center; gap: 8px; background: rgba(224,62,62,0.08); color: var(--red); }
-.status.success { display: flex; align-items: center; gap: 8px; background: rgba(15,123,108,0.08); color: var(--green); }
-.status.loading { display: flex; align-items: center; gap: 8px; background: var(--bg2); color: var(--text2); }
-
-/* Spinner */
-.spinner {
-  width: 16px; height: 16px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* User info after login */
-.user-info {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: var(--bg2);
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-.user-info.show { display: flex; }
-.user-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid var(--border);
-}
-.user-avatar-fallback {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.user-name  { font-size: 13.5px; font-weight: 500; }
-.user-email { font-size: 12px; color: var(--text3); }
-
-/* Footer */
-.footer {
-  margin-top: 28px;
-  font-size: 12px;
-  color: var(--text3);
-  text-align: center;
-  line-height: 1.6;
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
-}
-
-/* Unauthorized screen */
-.unauthorized {
-  display: none;
-  text-align: center;
-  padding: 8px 0;
-}
-.unauthorized.show { display: block; }
-.unauth-icon {
-  font-size: 36px;
-  margin-bottom: 12px;
-}
-.unauth-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--text);
-}
-.unauth-desc {
-  font-size: 13px;
-  color: var(--text2);
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-.btn-retry {
-  padding: 7px 16px;
-  border: 1px solid var(--border2);
-  border-radius: 7px;
-  background: var(--bg);
-  color: var(--text2);
-  font-size: 13px;
-  cursor: pointer;
-  font-family: var(--font);
-}
-.btn-retry:hover { background: var(--bg2); }
-
-/* Hidden Google button container */
-#g_id_onload { display: none; }
+.btn-retry:hover{background:var(--bg2)}
 </style>
 </head>
 <body>
-
-<div class="card" id="login-card">
-
-  <!-- Logo -->
+<div class="card">
   <div class="logo">
     <div class="logo-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
         <path d="M12 2C7 2 3 6.5 3 10c0 1.5.5 3 1.5 4L3 18l3.5-1c1.5 1 3 1.5 5.5 1.5s4-.5 5.5-1.5L21 18l-1.5-4c1-1 1.5-2.5 1.5-4C21 6.5 17 2 12 2z"/>
-        <circle cx="9" cy="10" r="1.2" fill="rgba(35,131,226,0.6)"/>
-        <circle cx="15" cy="10" r="1.2" fill="rgba(35,131,226,0.6)"/>
-        <path d="M10 13.5c.5.8 1 1 2 1s1.5-.2 2-1" stroke="rgba(35,131,226,0.6)" stroke-width="1" fill="none" stroke-linecap="round"/>
-        <path d="M3 4l2 3M21 4l-2 3" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="9" cy="10" r="1.2" fill="rgba(35,131,226,.6)"/>
+        <circle cx="15" cy="10" r="1.2" fill="rgba(35,131,226,.6)"/>
+        <path d="M10 13.5c.5.8 1 1 2 1s1.5-.2 2-1" stroke="rgba(35,131,226,.6)" stroke-width="1" fill="none" stroke-linecap="round"/>
       </svg>
     </div>
     <span class="logo-text">ProjectHub</span>
   </div>
 
-  <!-- Main login view -->
+  <!-- Login view -->
   <div id="view-login">
     <div class="heading">Đăng nhập</div>
     <div class="subheading">Sử dụng tài khoản Google được cấp quyền để truy cập hệ thống.</div>
 
-    <!-- User info (hiện sau khi chọn tài khoản Google) -->
-    <div class="user-info" id="user-info">
-      <img class="user-avatar" id="user-avatar" src="" alt="" onerror="this.style.display='none';document.getElementById('user-avatar-fb').style.display='flex'"/>
-      <div class="user-avatar-fallback" id="user-avatar-fb" style="display:none" id="user-avatar-fb"></div>
-      <div>
-        <div class="user-name" id="user-name"></div>
-        <div class="user-email" id="user-email"></div>
-      </div>
-    </div>
-
-    <!-- Google Sign-In button -->
-    <button class="btn-google" id="btn-google" onclick="signInWithGoogle()">
+    <button class="btn-login" id="btn-login" onclick="login()">
       <svg class="google-logo" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -310,259 +113,124 @@ body::before {
       Đăng nhập với Google
     </button>
 
-    <!-- Status messages -->
-    <div class="status loading" id="status-loading">
+    <div class="status loading" id="st-loading">
       <div class="spinner"></div>
-      <span id="status-loading-text">Đang xác thực...</span>
+      <span>Đang xác thực tài khoản...</span>
     </div>
-    <div class="status error" id="status-error">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
-      <span id="status-error-text"></span>
+    <div class="status error" id="st-error">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/>
+      </svg>
+      <span id="st-error-msg"></span>
     </div>
-    <div class="status success" id="status-success">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 6"/></svg>
-      <span id="status-success-text">Đăng nhập thành công! Đang chuyển hướng...</span>
+    <div class="status success" id="st-success">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 6"/>
+      </svg>
+      <span>Đăng nhập thành công! Đang chuyển hướng...</span>
     </div>
   </div>
 
   <!-- Unauthorized view -->
-  <div id="view-unauthorized" class="unauthorized">
+  <div class="unauth" id="view-unauth">
     <div class="unauth-icon">🔒</div>
     <div class="unauth-title">Không có quyền truy cập</div>
     <div class="unauth-desc" id="unauth-desc">
-      Tài khoản của bạn chưa được cấp quyền vào hệ thống.<br>
-      Vui lòng liên hệ quản trị viên.
+      Tài khoản của bạn chưa được cấp quyền.<br>Liên hệ quản trị viên để được cấp quyền.
     </div>
-    <button class="btn-retry" onclick="resetLogin()">Thử tài khoản khác</button>
+    <button class="btn-retry" onclick="resetView()">Thử tài khoản khác</button>
   </div>
 
-  <!-- Footer -->
   <div class="footer">
     Chỉ tài khoản được quản trị viên cấp quyền mới có thể đăng nhập.
   </div>
-
-</div>
-
-<!-- Hidden Google Identity trigger -->
-<div id="g_id_onload"
-  data-client_id="YOUR_GOOGLE_CLIENT_ID"
-  data-callback="handleGoogleCallback"
-  data-auto_prompt="false">
 </div>
 
 <script>
-// ══════════════════════════════════════════════════
-//  CONFIG — sửa tại đây
-// ══════════════════════════════════════════════════
-const LOGIN_CONFIG = {
-  GAS_URL:          'YOUR_GAS_URL',          // URL Apps Script
-  GOOGLE_CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID', // từ Google Cloud Console
-  SESSION_KEY:      'ph_session',
-  SESSION_HOURS:    8,                        // hết hạn sau N giờ
-  APP_URL:          './index.html',           // redirect sau khi login
-};
+// ══════════════════════════════════════════════
+//  CONFIG — điền GAS_URL của bạn vào đây
+// ══════════════════════════════════════════════
+const GAS_URL     = 'YOUR_GAS_URL';
+const SESSION_KEY = 'ph_session';
+const APP_URL     = './index.html';
 
-// ══════════════════════════════════════════════════
-//  UI HELPERS
-// ══════════════════════════════════════════════════
+// ── UI helpers ────────────────────────────────
 function showStatus(type, msg) {
-  ['loading','error','success'].forEach(t => {
-    document.getElementById('status-' + t).style.display = 'none';
-  });
-  const el = document.getElementById('status-' + type);
-  if (!el) return;
-  if (msg && document.getElementById('status-' + type + '-text')) {
-    document.getElementById('status-' + type + '-text').textContent = msg;
-  }
-  el.style.display = 'flex';
+  ['loading','error','success'].forEach(t =>
+    document.getElementById('st-'+t).classList.remove('show')
+  );
+  if (msg) document.getElementById('st-error-msg').textContent = msg;
+  document.getElementById('st-'+type).classList.add('show');
 }
-
 function hideStatus() {
-  ['loading','error','success'].forEach(t => {
-    document.getElementById('status-' + t).style.display = 'none';
-  });
+  ['loading','error','success'].forEach(t =>
+    document.getElementById('st-'+t).classList.remove('show')
+  );
 }
-
-function showUserInfo(name, email, picture) {
-  document.getElementById('user-name').textContent  = name;
-  document.getElementById('user-email').textContent = email;
-  document.getElementById('user-avatar').src        = picture || '';
-  // Fallback avatar
-  const fb = document.getElementById('user-avatar-fb');
-  if (fb) fb.textContent = name ? name.charAt(0).toUpperCase() : '?';
-  document.getElementById('user-info').classList.add('show');
-}
-
-function showUnauthorized(email) {
-  document.getElementById('view-login').style.display = 'none';
-  document.getElementById('view-unauthorized').classList.add('show');
-  document.getElementById('unauth-desc').innerHTML =
-    `Email <b>${email}</b> chưa được cấp quyền truy cập.<br>Vui lòng liên hệ quản trị viên.`;
-}
-
-function resetLogin() {
+function resetView() {
   document.getElementById('view-login').style.display = 'block';
-  document.getElementById('view-unauthorized').classList.remove('show');
-  document.getElementById('user-info').classList.remove('show');
+  document.getElementById('view-unauth').classList.remove('show');
+  document.getElementById('btn-login').disabled = false;
   hideStatus();
-  // Sign out Google để chọn tài khoản khác
-  if (window.google && google.accounts && google.accounts.id) {
-    google.accounts.id.disableAutoSelect();
-  }
 }
 
-// ══════════════════════════════════════════════════
-//  GOOGLE SIGN-IN
-// ══════════════════════════════════════════════════
-function signInWithGoogle() {
-  if (!window.google) {
-    showStatus('error', 'Google Sign-In chưa load. Kiểm tra kết nối mạng.');
+// ── Login ─────────────────────────────────────
+function login() {
+  if (!GAS_URL || GAS_URL.includes('YOUR_GAS_URL')) {
+    showStatus('error', 'Chưa cấu hình GAS_URL trong login.html');
     return;
   }
-  if (!LOGIN_CONFIG.GOOGLE_CLIENT_ID || LOGIN_CONFIG.GOOGLE_CLIENT_ID.includes('YOUR_')) {
-    showStatus('error', 'Chưa cấu hình GOOGLE_CLIENT_ID trong login.html');
-    return;
-  }
+  document.getElementById('btn-login').disabled = true;
+  showStatus('loading');
 
-  document.getElementById('btn-google').disabled = true;
-  showStatus('loading', 'Đang mở cửa sổ đăng nhập Google...');
+  // Redirect sang Apps Script để Google xác thực
+  const redirectBack = encodeURIComponent(window.location.href);
+  const loginUrl = GAS_URL + '?action=login&redirect=' +
+    encodeURIComponent(window.location.origin + window.location.pathname.replace('login.html','index.html'));
 
-  google.accounts.id.initialize({
-    client_id: LOGIN_CONFIG.GOOGLE_CLIENT_ID,
-    callback:  handleGoogleCallback,
-    ux_mode:   'popup',
-  });
+  window.location.href = loginUrl;
+}
 
-  google.accounts.id.prompt(function(notification) {
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // Fallback: dùng renderButton
-      google.accounts.oauth2 ? triggerOAuth() : showGoogleButton();
+// ── Xử lý kết quả sau khi redirect về ────────
+function handleCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const error  = params.get('error');
+  const email  = params.get('email');
+
+  if (error === 'unauthorized') {
+    document.getElementById('view-login').style.display = 'none';
+    document.getElementById('view-unauth').classList.add('show');
+    if (email) {
+      document.getElementById('unauth-desc').innerHTML =
+        `Email <b>${decodeURIComponent(email)}</b> chưa được cấp quyền.<br>Liên hệ quản trị viên.`;
     }
-  });
-}
-
-function showGoogleButton() {
-  // Render button ẩn rồi click
-  const container = document.createElement('div');
-  container.style.display = 'none';
-  document.body.appendChild(container);
-  google.accounts.id.renderButton(container, {
-    type: 'standard', size: 'large',
-    callback: handleGoogleCallback,
-  });
-  setTimeout(() => container.querySelector('[role=button]')?.click(), 100);
-}
-
-// ══════════════════════════════════════════════════
-//  CALLBACK — nhận JWT token từ Google
-// ══════════════════════════════════════════════════
-async function handleGoogleCallback(response) {
-  if (!response || !response.credential) {
-    showStatus('error', 'Đăng nhập thất bại. Vui lòng thử lại.');
-    document.getElementById('btn-google').disabled = false;
+    // Xóa params khỏi URL
+    history.replaceState({}, '', window.location.pathname);
     return;
   }
 
-  // Decode JWT payload (không cần verify ở client — Apps Script sẽ verify)
-  const payload = decodeJWT(response.credential);
-  if (!payload) {
-    showStatus('error', 'Token không hợp lệ.');
+  if (error) {
+    showStatus('error', 'Lỗi đăng nhập: ' + decodeURIComponent(error));
+    history.replaceState({}, '', window.location.pathname);
     return;
   }
-
-  showUserInfo(payload.name, payload.email, payload.picture);
-  showStatus('loading', 'Đang kiểm tra quyền truy cập...');
-
-  // Gửi token lên Apps Script để verify + lấy user info
-  try {
-    const result = await verifyWithGAS(response.credential, payload.email);
-
-    if (result.ok) {
-      // Lưu session
-      const session = {
-        token:      result.session_token,
-        email:      payload.email,
-        name:       payload.name,
-        picture:    payload.picture,
-        username:   payload.email.split('@')[0],
-        member_id:  result.member_id,
-        position_id: result.position_id,
-        permissions: result.permissions,
-        expires_at: Date.now() + (LOGIN_CONFIG.SESSION_HOURS * 3600000),
-      };
-      localStorage.setItem(LOGIN_CONFIG.SESSION_KEY, JSON.stringify(session));
-
-      showStatus('success');
-      setTimeout(() => {
-        window.location.href = LOGIN_CONFIG.APP_URL;
-      }, 1200);
-
-    } else {
-      showUnauthorized(payload.email);
-    }
-
-  } catch(err) {
-    showStatus('error', 'Lỗi kết nối: ' + err.message);
-    document.getElementById('btn-google').disabled = false;
-  }
 }
 
-// ══════════════════════════════════════════════════
-//  VERIFY với Apps Script
-// ══════════════════════════════════════════════════
-async function verifyWithGAS(idToken, email) {
-  if (!LOGIN_CONFIG.GAS_URL || LOGIN_CONFIG.GAS_URL.includes('YOUR_')) {
-    // Dev mode: bỏ qua verify, cho vào thẳng
-    console.warn('[Auth] DEV MODE — GAS_URL chưa cấu hình, bypass auth');
-    return {
-      ok:           true,
-      session_token: 'dev_' + Date.now(),
-      member_id:    'dev_member',
-      position_id:  'pos_admin',
-      permissions:  { all: true },
-    };
-  }
-
-  const url = LOGIN_CONFIG.GAS_URL +
-    '?action=auth&token=' + encodeURIComponent(idToken) +
-    '&email=' + encodeURIComponent(email);
-
-  const res  = await fetch(url, { redirect: 'follow', mode: 'cors' });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
-
-// ══════════════════════════════════════════════════
-//  JWT decode (client-side, không verify sig)
-// ══════════════════════════════════════════════════
-function decodeJWT(token) {
-  try {
-    const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-    const json    = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(json);
-  } catch(e) {
-    return null;
-  }
-}
-
-// ══════════════════════════════════════════════════
-//  INIT — kiểm tra session còn không
-// ══════════════════════════════════════════════════
+// ── Init ─────────────────────────────────────
 (function init() {
-  // Nếu đã có session hợp lệ → redirect thẳng vào app
+  // Kiểm tra session còn hợp lệ không
   try {
-    const session = JSON.parse(localStorage.getItem(LOGIN_CONFIG.SESSION_KEY) || '{}');
-    if (session.token && session.expires_at > Date.now()) {
-      showStatus('success', 'Đã đăng nhập. Đang chuyển hướng...');
-      setTimeout(() => window.location.href = LOGIN_CONFIG.APP_URL, 500);
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+    if (s.token && s.expires_at > Date.now()) {
+      showStatus('success');
+      setTimeout(() => window.location.href = APP_URL, 500);
       return;
     }
   } catch(e) {}
+  localStorage.removeItem(SESSION_KEY);
 
-  // Xóa session cũ hết hạn
-  localStorage.removeItem(LOGIN_CONFIG.SESSION_KEY);
+  // Xử lý callback nếu có error params
+  handleCallback();
 })();
 </script>
 </body>
