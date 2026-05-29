@@ -1,16 +1,35 @@
 /**
  * config.js — Cấu hình toàn ứng dụng
- * ĐÂY LÀ NƠI DUY NHẤT cần điền GAS_URL
+ * Chỉ cần điền 2 URL vào đây, không sửa file nào khác
  */
 const APP_CONFIG = {
-  GAS_URL:       'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec',
+
+  // ── URL 1: Login (Anyone with Google account) ──────
+  // Deploy setting: Execute as Me | Anyone with Google account
+  // Dùng cho: popup đăng nhập Google
+  LOGIN_URL: 'https://script.google.com/macros/s/AKfycbyqL5NDnCl46twJNjq4-DrcQjYloMR0zpKFP70kHrgUvTe7qyTcBuwKpGFbAflItLm0/exec',
+              
+  // ── URL 2: Data (Anyone) ────────────────────────────
+  // Deploy setting: Execute as Me | Anyone (không cần Google account)
+  // Dùng cho: fetch() đọc/ghi data — CORS hoạt động
+  // Tạo deployment mới: Apps Script → Deploy → New deployment → Anyone
+  DATA_URL: 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec',
+  
+  // ── Session ────────────────────────────────────────
   SESSION_KEY:   'ph_session',
   SESSION_HOURS: 8,
-  APP_URL:       './index.html',
-  LOGIN_URL:     './login.html',
+
+  // ── App URLs ───────────────────────────────────────
+  APP_URL:   './index.html',
+  LOGIN_URL_PAGE: './login.html',
+
+  // ── Polling ────────────────────────────────────────
   POLL_INTERVAL: 30000,
   SAVE_DEBOUNCE: 1500,
 };
 
-window.GAS_URL    = APP_CONFIG.GAS_URL;
+// app.js dùng GAS_URL để fetch data → dùng DATA_URL
+window.GAS_URL    = APP_CONFIG.DATA_URL;
+// login.html dùng LOGIN_URL để mở popup
+window.LOGIN_URL  = APP_CONFIG.LOGIN_URL;
 window.APP_CONFIG = APP_CONFIG;
