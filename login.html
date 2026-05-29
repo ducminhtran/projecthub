@@ -163,17 +163,19 @@ function doLogin() {
 // ── Nhận message từ popup ─────────────────────
 window.addEventListener('message', function(event) {
   // Chỉ nhận từ Apps Script domain
-  if (!event.origin.includes('script.google.com') &&
-      !event.origin.includes('googleusercontent.com')) return;
+  // auth-callback.html cùng domain gửi postMessage
+  // Không cần check origin vì cùng domain
 
   var data = event.data;
   if (!data || data.type !== 'ph_auth') return;
 
   clearInterval(_pollTimer);
-  if (_popup && !_popup.closed) _popup.close();
 
   if (data.ok) {
-    saveSession(data);
+    // Session đã được lưu bởi auth-callback.html
+    // Chỉ cần redirect về app
+    showMsg('ok');
+    setTimeout(function() { window.location.replace(APP_URL); }, 500);
   } else if (data.error === 'unauthorized') {
     document.getElementById('view-login').style.display = 'none';
     document.getElementById('view-denied').classList.add('show');
