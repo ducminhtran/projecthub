@@ -17,18 +17,19 @@ window.APP_CONFIG = window.APP_CONFIG || { SESSION_KEY: "ph_session", APP_URL: "
   try {
     var p = new URLSearchParams(window.location.search);
 
-    if (p.get('error')) {
-      // Báo lỗi về parent
+    if (p.get('ok') === '0' || p.get('error')) {
+      var errMsg = p.get('err') || p.get('error') || 'unknown';
+      var errEmail = p.get('email') || '';
       if (window.opener) {
-        window.opener.postMessage({ type: 'ph_auth', ok: false, error: p.get('error'), email: p.get('email') || '' }, '*');
-        setTimeout(function() { window.close(); }, 300);
+        window.opener.postMessage({ type: 'ph_auth', ok: false, error: errMsg, email: errEmail }, '*');
+        setTimeout(function() { window.close(); }, 500);
       } else {
-        window.location.replace(APP_URL + '?auth_error=' + encodeURIComponent(p.get('error')));
+        window.location.replace('./login.html?error=' + encodeURIComponent(errMsg) + '&email=' + encodeURIComponent(errEmail));
       }
       return;
     }
 
-    if (!p.get('token')) {
+    if (!p.get('token') && p.get('ok') !== '0') {
       if (window.opener) {
         window.opener.postMessage({ type: 'ph_auth', ok: false, error: 'Không nhận được token' }, '*');
         setTimeout(function() { window.close(); }, 300);
@@ -40,22 +41,27 @@ window.APP_CONFIG = window.APP_CONFIG || { SESSION_KEY: "ph_session", APP_URL: "
     var hours = (window.APP_CONFIG && window.APP_CONFIG.SESSION_HOURS) || 8;
     var session = {
       token:       p.get('token'),
-      email:       p.get('email')       || '',
-      name:        p.get('name')        || p.get('email') || '',
+      email:       p.get('email')  || '',
+      name:        p.get('name')   || p.get('email') || '',
       username:    (p.get('email') || '').split('@')[0],
-      member_id:   p.get('member_id')   || '',
-      position_id: p.get('position_id') || '',
-      permissions: JSON.parse(decodeURIComponent(p.get('permissions') || '%7B%7D')),
+      member_id:   p.get('mid')    || '',
+      position_id: p.get('pid')    || '',
+      permissions: JSON.parse(decodeURIComponent(p.get('pm') || '%7B%7D')),
       expires_at:  Date.now() + (hours * 3600000),
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
-    // Nếu là popup → đóng và báo parent
+    // Nếu là popup → redirect parent về app rồi đóng popup
     if (window.opener) {
-      window.opener.postMessage({ type: 'ph_auth', ok: true }, '*');
-      setTimeout(function() { window.close(); }, 300);
+      try {
+        window.opener.location.replace(APP_URL);
+      } catch(e) {
+        // Cross-origin fallback
+        window.opener.postMessage({ type: 'ph_auth', ok: true }, '*');
+      }
+      setTimeout(function() { window.close(); }, 500);
     } else {
-      // Nếu không phải popup → redirect thẳng
+      // Không phải popup → redirect thẳng
       window.location.replace(APP_URL);
     }
 
