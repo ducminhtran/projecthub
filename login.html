@@ -162,24 +162,31 @@ function doLogin() {
 
 // ── Nhận message từ popup ─────────────────────
 window.addEventListener('message', function(event) {
-  // Chỉ nhận từ Apps Script domain
-  // auth-callback.html cùng domain gửi postMessage
-  // Không cần check origin vì cùng domain
-
   var data = event.data;
   if (!data || data.type !== 'ph_auth') return;
 
   clearInterval(_pollTimer);
+  try { if (_popup && !_popup.closed) _popup.close(); } catch(e) {}
 
   if (data.ok) {
-    // Session đã được lưu bởi auth-callback.html
-    // Chỉ cần redirect về app
+    var hours = (window.APP_CONFIG && window.APP_CONFIG.SESSION_HOURS) || 8;
+    var session = {
+      token:       data.token       || '',
+      email:       data.email       || '',
+      name:        data.name        || data.email || '',
+      username:    (data.email || '').split('@')[0],
+      member_id:   data.member_id   || '',
+      position_id: data.position_id || '',
+      permissions: data.permissions || {},
+      expires_at:  Date.now() + (hours * 3600000),
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     showMsg('ok');
-    setTimeout(function() { window.location.replace(APP_URL); }, 500);
+    setTimeout(function() { window.location.replace(APP_URL); }, 800);
   } else if (data.error === 'unauthorized') {
-    document.getElementById('view-login').style.display = 'none';
+    document.getElementById('view-login').style.display  = 'none';
     document.getElementById('view-denied').classList.add('show');
-    document.getElementById('denied-email').textContent = data.email || '';
+    document.getElementById('denied-email').textContent = data.email ? 'Email: ' + data.email : '';
     showMsg(null);
   } else {
     showMsg('error', data.error || 'Đăng nhập thất bại');
