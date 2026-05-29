@@ -1,3 +1,7 @@
+// GAS_URL đọc từ config.js (window.GAS_URL)
+// KHÔNG định nghĩa ở đây - chỉ định nghĩa 1 lần trong config.js
+var GAS_URL = window.GAS_URL || '';
+
 // ══════════════════════════════════════════════════
 //  SESSION & AUTH
 // ══════════════════════════════════════════════════
@@ -513,7 +517,8 @@ async function loadFromSheets() {
   showSyncStatus('loading', '↓ Đang tải từ Sheets...');
   try {
     document.getElementById('loading-msg')?.textContent && (document.getElementById('loading-msg').textContent = 'Đang lấy dữ liệu');
-    const res = await fetch(GAS_URL + '?all=true', {
+    const _token = getToken ? getToken() : '';
+    const res = await fetch(GAS_URL + '?all=true&t=' + Date.now() + (_token ? '&token=' + encodeURIComponent(_token) : ''), {
       redirect: 'follow',
       mode: 'cors',
     });
@@ -579,7 +584,6 @@ async function saveSheet(sheetKey, data) {
   try {
     await fetch(GAS_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'save', sheet: sheetKey, rows: data }),
     });
