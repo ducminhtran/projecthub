@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script>
+// Load config nếu có, fallback hardcode
+window.APP_CONFIG = window.APP_CONFIG || { SESSION_KEY: "ph_session", APP_URL: "./index.html", SESSION_HOURS: 8 };
+</script>
+<script src="config.js" onerror="console.log('config.js not found, using defaults')"></script>
+</head>
+<body>
+<script>
+(function() {
+  var SESSION_KEY = (window.APP_CONFIG && window.APP_CONFIG.SESSION_KEY) || 'ph_session';
+  var APP_URL     = (window.APP_CONFIG && window.APP_CONFIG.APP_URL)     || './index.html';
+
+  try {
+    var p = new URLSearchParams(window.location.search);
+
+    if (p.get('error')) {
+      // Báo lỗi về parent
+      if (window.opener) {
+        window.opener.postMessage({ type: 'ph_auth', ok: false, error: p.get('error'), email: p.get('email') || '' }, '*');
+        setTimeout(function() { window.close(); }, 300);
+      } else {
+        window.location.replace(APP_URL + '?auth_error=' + encodeURIComponent(p.get('error')));
+      }
+      return;
+    }
+
+    if (!p.get('token')) {
+      if (window.opener) {
+        window.opener.postMessage({ type: 'ph_auth', ok: false, error: 'Không nhận được token' }, '*');
+        setTimeout(function() { window.close(); }, 300);
+      }
+      return;
+    }
+
+    // Lưu session vào localStorage (cùng domain → không bị chặn)
+    var hours = (window.APP_CONFIG && window.APP_CONFIG.SESSION_HOURS) || 8;
+    var session = {
+      token:       p.get('token'),
+      email:       p.get('email')       || '',
+      name:        p.get('name')        || p.get('email') || '',
+      username:    (p.get('email') || '').split('@')[0],
+      member_id:   p.get('member_id')   || '',
+      position_id: p.get('position_id') || '',
+      permissions: JSON.parse(decodeURIComponent(p.get('permissions') || '%7B%7D')),
+      expires_at:  Date.now() + (hours * 3600000),
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+    // Nếu là popup → đóng và báo parent
+    if (window.opener) {
+      window.opener.postMessage({ type: 'ph_auth', ok: true }, '*');
+      setTimeout(function() { window.close(); }, 300);
+    } else {
+      // Nếu không phải popup → redirect thẳng
+      window.location.replace(APP_URL);
+    }
+
+  } catch(e) {
+    if (window.opener) {
+      window.opener.postMessage({ type: 'ph_auth', ok: false, error: e.message }, '*');
+      setTimeout(function() { window.close(); }, 300);
+    }
+  }
+})();
+</script>
+<style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f7f6f3}</style>
+<p style="color:#666;font-size:14px">Đang xác thực...</p>
+</body>
+</html>
