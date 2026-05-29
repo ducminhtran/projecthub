@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Đăng nhập — ProjectHub</title>
+<script src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -67,7 +68,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:#f7f6f3;min-heigh
 
 <script>
 // ── CONFIG ────────────────────────────────────
-const GAS_URL     = 'https://script.google.com/macros/s/AKfycby-X4xIjkf5x2qyGLiAznwaOIR0VXLTr8fKn8bM8nwtPkMZXL781iP-clcPOAyjcbGk/exec'; // ← điền GAS_URL của bạn
+const GAS_URL = window.GAS_URL || ''; // từ config.js // ← điền GAS_URL của bạn
 const SESSION_KEY = 'ph_session';
 const APP_URL     = './index.html';
 
